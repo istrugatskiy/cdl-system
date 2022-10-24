@@ -1,0 +1,9 @@
+{
+  "name": "cdl-system",
+  "version": "1.0.0",
+  "description": "CDL Plant Project",
+  "main": "src/index.ts",
+  "author": "Alex, Ilya, Joe, Lev, Maeve, Max",
+  "license": "No license",
+  "private": true
+}
