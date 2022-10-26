@@ -11,3 +11,11 @@ body {
     width: 100vw;
     align-items: center;
 }
+#main {
+    position: absolute;
+    display: grid;
+    height: 100%;
+    width: 100%;
+    justify-items: center;
+    align-items: center;
+}

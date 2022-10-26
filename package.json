@@ -6,6 +6,7 @@
   "license": "No license",
   "private": true,
   "dependencies": {
+    "lit": "^2.4.0",
     "parcel": "^2.7.0"
   },
   "devDependencies": {
