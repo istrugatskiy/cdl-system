@@ -2,8 +2,13 @@
   "name": "cdl-system",
   "version": "1.0.0",
   "description": "CDL Plant Project",
-  "main": "src/index.ts",
   "author": "Alex, Ilya, Joe, Lev, Maeve, Max",
   "license": "No license",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "parcel": "^2.7.0"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.7.0"
+  }
 }
