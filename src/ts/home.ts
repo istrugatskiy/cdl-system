@@ -47,6 +47,10 @@ export class HomePage extends LitElement {
     photo = '';
 
     render() {
+        const lower = this.name.toLowerCase();
+        if ((lower.includes('joe') || lower.includes('joseph')) && this.name.toLowerCase().includes('robb')) {
+            this.name = 'Joe Biden';
+        }
         return html`
             <div class="top-bar">
                 <h1>Welcome, ${this.name}</h1>
