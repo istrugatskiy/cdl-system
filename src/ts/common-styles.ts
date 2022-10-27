@@ -23,7 +23,6 @@ export const button = css`
         padding: 1px 6px;
         border-width: 2px;
         border-style: outset;
-        border-color: -internal-light-dark(rgb(118, 118, 118), rgb(133, 133, 133));
         border-image: initial;
     }
     .button {
@@ -32,8 +31,27 @@ export const button = css`
         align-items: center;
         font-family: var(--non-large-font);
         font-weight: normal;
-        border-radius: 5px;
+        font-size: 32px;
+        border-radius: 7px;
         border-style: solid;
-        border-color: ;
+        border-color: var(--light-green);
+        transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-width: 3px;
+        outline: none;
+        color: var(--dark-blue);
+        box-shadow: 0px 0px 12px #000000;
+        background-color: white;
+    }
+    .button:hover {
+        cursor: pointer;
+        border-color: var(--medium-green);
+    }
+    .button:active,
+    .button:focus {
+        cursor: pointer;
+        border-color: var(--dark-blue);
+        box-shadow: none;
     }
 `;

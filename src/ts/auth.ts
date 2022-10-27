@@ -1,5 +1,6 @@
 import { html, css, LitElement } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
+import { login } from './index';
 import { button } from './common-styles';
 
 @customElement('main-auth')
@@ -11,12 +12,16 @@ export class Auth extends LitElement {
             border-radius: 5px;
             margin: 10px;
             padding: 10px;
+            max-width: 800px;
         }
         h1 {
             color: var(--dark-blue);
             font-size: 64px;
             font-family: var(--large-font);
             text-align: center;
+        }
+        img {
+            max-width: 100%;
         }
         .login-parent {
             text-align: center;
@@ -27,12 +32,14 @@ export class Auth extends LitElement {
     `;
 
     render() {
-        const imageUrl = new URL('../res/Google__G__Logo.svg', import.meta.url);
+        const googleLogo = new URL('../res/Google__G__Logo.svg', import.meta.url);
+        const systemLogo = new URL('../res/logo.svg', import.meta.url);
         return html`<div class="login">
+            <img src="${systemLogo}" alt="System Logo" />
             <h1>Login</h1>
             <div class="login-parent">
-                <button class="button">
-                    <img src="${imageUrl}" alt="Google Logo" width="30" height="30" />
+                <button class="button" @click="${login}">
+                    <img src="${googleLogo}" alt="Google Logo" width="30" height="30" />
                     Sign in with Google
                 </button>
             </div>
