@@ -1,19 +1,13 @@
 import { html, css, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { logout } from '.';
-import { button } from './common-styles';
+import { button, h1 } from './common-styles';
 
 @customElement('home-page')
 export class HomePage extends LitElement {
     static styles = css`
         ${button}
-        h1 {
-            color: var(--dark-blue);
-            font-size: 48px;
-            font-family: var(--large-font);
-            text-align: center;
-            background-color: var(--light-green);
-        }
+        ${h1}
         @keyframes slide-from-top {
             from {
                 transform: translateY(-100%);
@@ -47,10 +41,6 @@ export class HomePage extends LitElement {
     photo = '';
 
     render() {
-        const lower = this.name.toLowerCase();
-        if ((lower.includes('joe') || lower.includes('joseph')) && this.name.toLowerCase().includes('robb')) {
-            this.name = 'Joe Biden';
-        }
         return html`
             <div class="top-bar">
                 <h1>Welcome, ${this.name}</h1>

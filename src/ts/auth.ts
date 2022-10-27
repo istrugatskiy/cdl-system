@@ -23,7 +23,9 @@ export class Auth extends LitElement {
             max-width: 800px;
             border-width: 6px;
             border-style: solid;
-            /*make top right border different color*/
+            border-collapse: separate;
+            overflow: hidden;
+            perspective: 1px;
             border-image: linear-gradient(to bottom right, var(--dark-blue), var(--light-green)) 1;
             animation: 0.3s cubic-bezier(0.42, 0, 0, 1.92) 0s 1 normal none running pop-in;
         }

@@ -1,5 +1,15 @@
 import { css } from 'lit';
 
+export const h1 = css`
+    h1 {
+        color: var(--dark-blue);
+        font-size: 48px;
+        font-family: var(--large-font);
+        text-align: center;
+        background-color: var(--light-green);
+    }
+`;
+
 export const button = css`
     .material-symbols-outlined {
         font-family: 'Material Symbols Outlined';
