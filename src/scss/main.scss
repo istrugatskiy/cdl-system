@@ -1,3 +1,17 @@
+$large-font: 'Fredoka One', cursive;
+$non-large-font: 'Montserrat', sans-serif;
+$dark-blue: #66a99e;
+$dark-green: #67a451;
+$medium-green: #a5da66;
+$light-green: #c6ddbe;
+:root {
+    --large-font: #{$large-font};
+    --non-large-font: #{$non-large-font};
+    --dark-blue: #{$dark-blue};
+    --dark-green: #{$dark-green};
+    --medium-green: #{$medium-green};
+    --light-green: #{$light-green};
+}
 body {
     margin: 0px;
 }
