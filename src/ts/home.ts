@@ -9,18 +9,21 @@ export class HomePage extends LitElement {
         ${button}
         h1 {
             color: var(--dark-blue);
-            font-size: 120px;
+            font-size: 64px;
             font-family: var(--large-font);
             text-align: center;
             background-color: var(--light-green);
         }
-        .center {
+        .top-bar {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100%;
             background-color: var(--light-green);
+            width: 100vw;
+            justify-content: center;
+        }
+        .logout {
+            margin-left: 20px;
+            margin-right: 20px;
         }
     `;
 
@@ -28,9 +31,13 @@ export class HomePage extends LitElement {
     name = 'Generic';
 
     render() {
-        return html`<div class="center">
-            <h1>Welcome, ${this.name}</h1>
-            <button class="button" @click="${logout}">Sign Out</button>
-        </div>`;
+        return html`
+            <span class="top-bar">
+                <h1>Welcome, ${this.name}</h1>
+                <button class="button logout" @click="${logout}">
+                    <span class="material-symbols-outlined">logout</span>
+                </button>
+            </span>
+        `;
     }
 }

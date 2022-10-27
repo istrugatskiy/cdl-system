@@ -13,12 +13,15 @@ initializeApp({
 
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
+const main = document.querySelector('#main') as HTMLDivElement;
 
 onAuthStateChanged(auth, (user) => {
     if (user == null) return;
     document.querySelector('main-auth')?.remove();
     const home = document.createElement('home-page');
     document.querySelector('#main')?.appendChild(home);
+    main.classList.add('main-home');
+
     home.dataset.name = user.displayName!;
 });
 
@@ -30,4 +33,5 @@ export const logout = async () => {
     await auth.signOut();
     document.querySelector('#main')?.appendChild(document.createElement('main-auth'));
     document.querySelector('home-page')?.remove();
+    main.classList.remove('main-home');
 };

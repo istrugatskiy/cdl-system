@@ -1,6 +1,10 @@
 import { css } from 'lit';
 
 export const button = css`
+    .material-symbols-outlined {
+        font-family: 'Material Symbols Outlined';
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+    }
     button {
         appearance: button;
         -webkit-writing-mode: horizontal-tb !important;
@@ -43,6 +47,7 @@ export const button = css`
         color: var(--dark-blue);
         box-shadow: 0px 0px 12px #000000;
         background-color: white;
+        height: 50px;
     }
     .button:hover {
         cursor: pointer;
