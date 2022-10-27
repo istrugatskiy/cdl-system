@@ -7,18 +7,38 @@ import { button } from './common-styles';
 export class Auth extends LitElement {
     static styles = css`
         ${button}
+        @keyframes pop-in {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
         .login {
             background-color: white;
-            border-radius: 5px;
+            border-radius: 20px;
             margin: 10px;
             padding: 10px;
             max-width: 800px;
+            border-width: 6px;
+            border-style: solid;
+            /*make top right border different color*/
+            border-image: linear-gradient(to bottom right, var(--dark-blue), var(--light-green)) 1;
+            animation: 0.3s cubic-bezier(0.42, 0, 0, 1.92) 0s 1 normal none running pop-in;
         }
         h1 {
+            margin-top: 0;
             color: var(--dark-blue);
             font-size: 64px;
             font-family: var(--large-font);
             text-align: center;
+        }
+        p {
+            color: var(--dark-blue);
+            font-size: 24px;
+            font-family: var(--non-large-font);
+            text-align: justify;
         }
         img {
             max-width: 100%;
@@ -43,6 +63,7 @@ export class Auth extends LitElement {
                     Sign in with Google
                 </button>
             </div>
+            <p>By using System, you agree that you are over the age of thirteen and that your data may be shared with third party service providers.</p>
         </div>`;
     }
 }

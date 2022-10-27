@@ -47,7 +47,6 @@ export const button = css`
         color: var(--dark-blue);
         box-shadow: 0px 0px 12px #000000;
         background-color: white;
-        height: 50px;
     }
     .button:hover {
         cursor: pointer;

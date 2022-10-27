@@ -12,6 +12,10 @@ $light-green: #c6ddbe;
     --medium-green: #{$medium-green};
     --light-green: #{$light-green};
 }
+body {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
 ::selection {
     background: hsla(212, 100%, 83%, 0.678); /* WebKit/Blink Browsers */
 }
@@ -30,7 +34,7 @@ body {
     height: 105vh;
     width: 105vw;
     align-items: center;
-    filter: blur(10px) saturate(180%);
+    filter: blur(10px) saturate(240%);
 }
 #main {
     position: absolute;

@@ -16,13 +16,15 @@ const auth = getAuth();
 const main = document.querySelector('#main') as HTMLDivElement;
 
 onAuthStateChanged(auth, (user) => {
+    document.body.style.opacity = '1';
     if (user == null) return;
     document.querySelector('main-auth')?.remove();
     const home = document.createElement('home-page');
     document.querySelector('#main')?.appendChild(home);
     main.classList.add('main-home');
-
+    // Sets up user photo and name.
     home.dataset.name = user.displayName!;
+    home.dataset.photo = user.photoURL!;
 });
 
 export const login = () => {
