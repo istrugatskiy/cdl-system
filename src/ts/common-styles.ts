@@ -68,4 +68,10 @@ export const button = css`
         border-color: var(--dark-blue);
         box-shadow: none;
     }
+    .button:disabled {
+        box-shadow: none;
+        background-color: var(--light-green);
+        border-color: var(--light-green);
+        cursor: not-allowed;
+    }
 `;

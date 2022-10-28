@@ -1,6 +1,6 @@
 import { html, css, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { logout } from '.';
+import { AccountManager } from './account-manage';
 import { button, h1 } from './common-styles';
 
 @customElement('home-page')
@@ -40,11 +40,18 @@ export class HomePage extends LitElement {
     @property({ type: String, reflect: true, attribute: 'data-photo' })
     photo = '';
 
+    accountManager() {
+        const accountManager = document.querySelector('account-manager') as AccountManager;
+        accountManager.open();
+        accountManager.dataset.name = this.name;
+        accountManager.dataset.photo = this.photo;
+    }
+
     render() {
         return html`
             <div class="top-bar">
                 <h1>Welcome, ${this.name}</h1>
-                <button class="button profile" @click="${logout}">
+                <button class="button profile" @click="${this.accountManager}">
                     <img src="${this.photo}" alt="Profile Picture" width="30" height="30" />
                 </button>
             </div>
