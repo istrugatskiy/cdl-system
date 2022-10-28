@@ -73,6 +73,14 @@ export class AccountManager extends LitElement {
             text-align: justify;
             font-size: 24px;
         }
+        .grid-top {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+        }
+        .x-button {
+            align-self: flex-start;
+        }
     `;
 
     @property({ type: String, reflect: true, attribute: 'data-name' })
@@ -127,8 +135,10 @@ export class AccountManager extends LitElement {
     render() {
         return html`<div class="overlay ${this.closing ? 'disappear' : ''}">
             <div class="account-info">
-                <img src="${this.photo}" alt="User Photo" height="150" width="150" />
-                <button class="button" @click=${this.close} ?disabled=${this.areButtonsDisabled}><span class="material-symbols-outlined">close</span></button>
+                <div class="grid-top">
+                    <img src="${this.photo}" alt="User Photo" height="150" width="150" />
+                    <button class="button x-button" @click=${this.close} ?disabled=${this.areButtonsDisabled}><span class="material-symbols-outlined">close</span></button>
+                </div>
                 <h1>${this.name}</h1>
                 <p>UID: ${this.uid}</p>
                 <button class="button" ?disabled=${this.areButtonsDisabled}><span class="material-symbols-outlined">file_download</span>Export Data</button>
