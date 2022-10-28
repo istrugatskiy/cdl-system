@@ -42,3 +42,7 @@ export const logout = async () => {
     document.querySelector('home-page')?.remove();
     main.classList.remove('main-home');
 };
+
+export const delay = (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+};
