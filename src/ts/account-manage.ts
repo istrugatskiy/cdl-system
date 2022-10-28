@@ -71,11 +71,13 @@ export class AccountManager extends LitElement {
             color: var(--dark-blue);
             font-family: var(--non-large-font);
             text-align: justify;
-            font-size: 24px;
+            font-size: 16px;
         }
         .grid-top {
+            width: 100%;
             display: grid;
-            grid-template-columns: 1fr auto;
+            justify-items: center;
+            grid-template-columns: 50px 1fr 50px;
             align-items: center;
         }
         .x-button {
@@ -84,13 +86,13 @@ export class AccountManager extends LitElement {
     `;
 
     @property({ type: String, reflect: true, attribute: 'data-name' })
-    name = 'Ilya Strugatskiy';
+    name = '';
 
     @property({ type: String, reflect: true, attribute: 'data-uid' })
-    uid = '1234567890';
+    uid = '';
 
     @property({ type: String, reflect: true, attribute: 'data-photo' })
-    photo = 'https://lh3.googleusercontent.com/a/ALm5wu2g724reHgr2YNcWuGcN-W0gTn3VEW6kcxSLTiFvQ=s96-c';
+    photo = '';
 
     @state()
     private areButtonsDisabled = true;
@@ -136,7 +138,9 @@ export class AccountManager extends LitElement {
         return html`<div class="overlay ${this.closing ? 'disappear' : ''}">
             <div class="account-info">
                 <div class="grid-top">
-                    <img src="${this.photo}" alt="User Photo" height="150" width="150" />
+                    <!--Scuffed Hack-->
+                    <div></div>
+                    <img src="${this.photo}" class="photo" alt="User Photo" height="150" width="150" />
                     <button class="button x-button" @click=${this.close} ?disabled=${this.areButtonsDisabled}><span class="material-symbols-outlined">close</span></button>
                 </div>
                 <h1>${this.name}</h1>

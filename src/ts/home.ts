@@ -1,5 +1,5 @@
 import { html, css, LitElement } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { AccountManager } from './account-manage';
 import { button, h1 } from './common-styles';
 
@@ -40,18 +40,26 @@ export class HomePage extends LitElement {
     @property({ type: String, reflect: true, attribute: 'data-photo' })
     photo = '';
 
+    @property({ type: String, reflect: true, attribute: 'data-uid' })
+    uid = '';
+
+    @state()
+    private areButtonsDisabled = false;
+
     accountManager() {
         const accountManager = document.querySelector('account-manager') as AccountManager;
+        this.areButtonsDisabled = true;
         accountManager.open();
         accountManager.dataset.name = this.name;
         accountManager.dataset.photo = this.photo;
+        accountManager.dataset.uid = this.uid;
     }
 
     render() {
         return html`
             <div class="top-bar">
                 <h1>Welcome, ${this.name}</h1>
-                <button class="button profile" @click="${this.accountManager}">
+                <button class="button profile" @click="${this.accountManager}" ?disabled=${this.areButtonsDisabled}>
                     <img src="${this.photo}" alt="Profile Picture" width="30" height="30" />
                 </button>
             </div>

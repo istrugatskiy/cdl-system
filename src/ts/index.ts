@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from 'firebase/auth';
+import { AccountManager } from './account-manage';
 
 initializeApp({
     apiKey: 'AIzaSyCteV4EPIhgZeqMlULv99ik5CEkDgbAXug',
@@ -17,7 +18,11 @@ const main = document.querySelector('#main') as HTMLDivElement;
 
 onAuthStateChanged(auth, (user) => {
     document.body.style.opacity = '1';
-    if (user == null) return;
+    if (user == null) {
+        const accountManager = document.querySelector('account-manager') as AccountManager;
+        accountManager.close();
+        return;
+    }
     document.querySelector('main-auth')?.remove();
     const home = document.createElement('home-page');
     document.querySelector('#main')?.appendChild(home);
@@ -30,6 +35,7 @@ onAuthStateChanged(auth, (user) => {
     }
     home.dataset.name = name;
     home.dataset.photo = user.photoURL!;
+    home.dataset.uid = user.uid;
 });
 
 export const login = () => {
