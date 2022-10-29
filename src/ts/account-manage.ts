@@ -102,6 +102,8 @@ export class AccountManager extends LitElement {
 
     private isInStateTransition = false;
 
+    private menuClose = new CustomEvent('menu-close', { bubbles: true, composed: true });
+
     connectedCallback() {
         super.connectedCallback();
         this.style.display = 'none';
@@ -127,6 +129,7 @@ export class AccountManager extends LitElement {
         this.isInStateTransition = false;
         this.style.display = 'none';
         this.closing = false;
+        this.dispatchEvent(this.menuClose);
     }
 
     logout() {
@@ -140,7 +143,7 @@ export class AccountManager extends LitElement {
                 <div class="grid-top">
                     <!--Scuffed Hack-->
                     <div></div>
-                    <img src="${this.photo}" class="photo" alt="User Photo" height="150" width="150" />
+                    <img src="${this.photo}" class="photo" alt="User Photo" height="150" width="150" referrerpolicy="no-referrer" />
                     <button class="button x-button" @click=${this.close} ?disabled=${this.areButtonsDisabled}><span class="material-symbols-outlined">close</span></button>
                 </div>
                 <h1>${this.name}</h1>

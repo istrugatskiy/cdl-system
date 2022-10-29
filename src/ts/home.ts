@@ -2,6 +2,7 @@ import { html, css, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { AccountManager } from './account-manage';
 import { button, h1 } from './common-styles';
+import { accountManager } from './constantRefs';
 
 @customElement('home-page')
 export class HomePage extends LitElement {
@@ -34,6 +35,13 @@ export class HomePage extends LitElement {
         }
     `;
 
+    connectedCallback() {
+        super.connectedCallback();
+        accountManager.addEventListener('menu-close', () => {
+            this.areButtonsDisabled = false;
+        });
+    }
+
     @property({ type: String, reflect: true, attribute: 'data-name' })
     name = 'Generic';
 
@@ -47,7 +55,6 @@ export class HomePage extends LitElement {
     private areButtonsDisabled = false;
 
     accountManager() {
-        const accountManager = document.querySelector('account-manager') as AccountManager;
         this.areButtonsDisabled = true;
         accountManager.open();
         accountManager.dataset.name = this.name;
@@ -60,7 +67,7 @@ export class HomePage extends LitElement {
             <div class="top-bar">
                 <h1>Welcome, ${this.name}</h1>
                 <button class="button profile" @click="${this.accountManager}" ?disabled=${this.areButtonsDisabled}>
-                    <img src="${this.photo}" alt="Profile Picture" width="30" height="30" />
+                    <img src="${this.photo}" alt="Profile Picture" width="30" height="30" referrerpolicy="no-referrer" />
                 </button>
             </div>
         `;
