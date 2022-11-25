@@ -1,6 +1,5 @@
 import { html, css, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { AccountManager } from './account-manage';
 import { button, h1 } from './common-styles';
 import { accountManager } from './constantRefs';
 
@@ -32,6 +31,10 @@ export class HomePage extends LitElement {
             border-radius: 50%;
             height: 50px;
             width: 50px;
+        }
+        .bottom-container {
+            display: grid;
+            width: 100vw;
         }
     `;
 
@@ -69,6 +72,9 @@ export class HomePage extends LitElement {
                 <button class="button profile" @click="${this.accountManager}" ?disabled=${this.areButtonsDisabled}>
                     <img src="${this.photo}" alt="Profile Picture" width="30" height="30" referrerpolicy="no-referrer" />
                 </button>
+            </div>
+            <div class="bottom-container">
+                <device-item></device-item>
             </div>
         `;
     }
