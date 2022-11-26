@@ -2,7 +2,7 @@ import { html, css, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { button, h1 } from './common-styles';
 
-@customElement('device-item')
+@customElement('add-device')
 export class AddDevice extends LitElement {
     static styles = css`
         ${button}
@@ -26,7 +26,7 @@ export class AddDevice extends LitElement {
     }
 
     render() {
-        return html``;
+        return html`<h1>Connect</h1>`;
     }
 }
 
