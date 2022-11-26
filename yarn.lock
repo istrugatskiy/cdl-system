@@ -1375,6 +1375,11 @@
   resolved "https://registry.npmjs.org/@types/node/-/node-18.11.7.tgz"
   integrity sha512-LhFTglglr63mNXUSRYD8A+ZAIu5sFqNJ4Y2fPuY7UlrySJH87rRRlhtVmMHplmfk5WkoJGmDjE9oiTfyX94CpQ==
 
+"@types/parcel-env@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@types/parcel-env/-/parcel-env-0.0.1.tgz#dbf0aa6c00bd52c7b85f65cb6027e4ebab6c4ac1"
+  integrity sha512-8WmdiJ1uEBcW6AOWzQH7i0141ZXZr7B03YfTpguUDrTHXJHwYU9eEOckBRCZzYGrzb4pdoyBlaIMiTee04uqPQ==
+
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.npmjs.org/@types/parse-json/-/parse-json-4.0.0.tgz"

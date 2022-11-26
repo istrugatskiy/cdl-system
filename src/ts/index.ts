@@ -1,9 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from 'firebase/auth';
-import { AccountManager } from './account-manage';
-import { DeviceItem } from './device-item';
-import { HomePage } from './home';
+import { accountManagerPopup } from './constant-refs';
 
+// Initialize Firebase.
 initializeApp({
     apiKey: 'AIzaSyCteV4EPIhgZeqMlULv99ik5CEkDgbAXug',
     authDomain: 'system-collab-garbage.firebaseapp.com',
@@ -18,15 +17,14 @@ const provider = new GoogleAuthProvider();
 const auth = getAuth();
 const main = document.querySelector('#main') as HTMLDivElement;
 
+// Handles authState and related animations.
 onAuthStateChanged(auth, (user) => {
     document.body.style.opacity = '1';
     if (user == null) {
-        const accountManager = document.querySelector('account-manager') as AccountManager;
-        accountManager.close();
+        accountManagerPopup.close();
         return;
     }
     document.querySelector('main-auth')?.remove();
-    console.log(DeviceItem);
     const home = document.createElement('home-page');
     document.querySelector('#main')?.appendChild(home);
     main.classList.add('main-home');
@@ -56,10 +54,8 @@ export const delay = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-declare global {
-    interface HTMLElementTagNameMap {
-        'device-item': DeviceItem;
-        'home-page': HomePage;
-        'account-manager': AccountManager;
+export function assert(condition: boolean, message: string): asserts condition is true {
+    if (!condition) {
+        throw new Error(message);
     }
 }

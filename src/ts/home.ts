@@ -1,13 +1,21 @@
 import { html, css, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { button, h1 } from './common-styles';
-import { accountManager } from './constantRefs';
+import { accountManager, accountManagerPopup } from './constant-refs';
+import './device-item';
 
 @customElement('home-page')
 export class HomePage extends LitElement {
     static styles = css`
         ${button}
         ${h1}
+        .profile {
+            margin-left: 20px;
+            margin-right: 20px;
+            border-radius: 50%;
+            height: 50px;
+            width: 50px;
+        }
         @keyframes slide-from-top {
             from {
                 transform: translateY(-100%);
@@ -25,22 +33,17 @@ export class HomePage extends LitElement {
             align-items: center;
             animation: slide-from-top 0.5s ease-in-out;
         }
-        .profile {
-            margin-left: 20px;
-            margin-right: 20px;
-            border-radius: 50%;
-            height: 50px;
-            width: 50px;
-        }
         .bottom-container {
+            margin-top: 20px;
             display: grid;
             width: 100vw;
+            justify-items: center;
         }
     `;
 
     connectedCallback() {
         super.connectedCallback();
-        accountManager.addEventListener('menu-close', () => {
+        accountManagerPopup.addEventListener('menu-close', () => {
             this.areButtonsDisabled = false;
         });
     }
@@ -59,9 +62,9 @@ export class HomePage extends LitElement {
 
     accountManager() {
         this.areButtonsDisabled = true;
-        accountManager.open();
+        accountManagerPopup.open();
+        accountManagerPopup.dataset.photo = this.photo;
         accountManager.dataset.name = this.name;
-        accountManager.dataset.photo = this.photo;
         accountManager.dataset.uid = this.uid;
     }
 
@@ -77,5 +80,11 @@ export class HomePage extends LitElement {
                 <device-item></device-item>
             </div>
         `;
+    }
+}
+
+declare global {
+    interface HTMLElementTagNameMap {
+        'home-page': HomePage;
     }
 }
