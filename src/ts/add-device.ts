@@ -99,6 +99,7 @@ export class AddDevice extends LitElement {
         const availability = await window.navigator.bluetooth.getAvailability();
         if (!availability) {
             this.currentStep = 0;
+            (this.parentElement as Popup).enableXButton();
             (this.parentElement as Popup).photo = 'icon://bluetooth_disabled';
         }
         const device = await window.navigator.bluetooth.requestDevice({

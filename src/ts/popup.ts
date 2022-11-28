@@ -44,7 +44,6 @@ export class Popup extends LitElement {
             min-width: 300px;
             border-width: 6px;
             border-style: solid;
-            border-radius: 20px;
             border-image: linear-gradient(to bottom right, var(--dark-blue), var(--light-green)) 1;
             animation: 0.3s cubic-bezier(0.42, 0, 0, 1.92) 0s 1 normal none running pop-in;
             background-color: var(--light-green);
@@ -52,7 +51,9 @@ export class Popup extends LitElement {
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto;
+            max-height: 90vh;
         }
         .overlay {
             position: fixed;
@@ -138,6 +139,10 @@ export class Popup extends LitElement {
 
     disableXButton = () => {
         this.areButtonsDisabled = true;
+    };
+
+    enableXButton = () => {
+        this.areButtonsDisabled = false;
     };
 
     render() {
