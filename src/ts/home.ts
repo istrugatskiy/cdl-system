@@ -43,9 +43,14 @@ export class HomePage extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
-        accountManagerPopup.addEventListener('menu-close', () => {
-            this.areButtonsDisabled = false;
-        });
+        window.addEventListener('menu-close', this.enableButtons);
+        window.addEventListener('menu-open', this.disableButtons);
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener('menu-close', this.enableButtons);
+        window.removeEventListener('menu-open', this.disableButtons);
     }
 
     @property({ type: String, reflect: true, attribute: 'data-name' })
@@ -59,6 +64,14 @@ export class HomePage extends LitElement {
 
     @state()
     private areButtonsDisabled = false;
+
+    private enableButtons = () => {
+        this.areButtonsDisabled = false;
+    };
+
+    private disableButtons = () => {
+        this.areButtonsDisabled = true;
+    };
 
     accountManager() {
         this.areButtonsDisabled = true;

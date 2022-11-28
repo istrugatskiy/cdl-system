@@ -1,6 +1,8 @@
 import { html, css, LitElement } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, state } from 'lit/decorators.js';
 import { button, h1 } from './common-styles';
+import { addDevicePopup } from './constant-refs';
+import './add-device';
 
 // Fixes customElementRegistry being written to twice.
 if (module.hot) {
@@ -23,8 +25,8 @@ export class DeviceItem extends LitElement {
         }
     `;
 
-    @property({ type: Boolean, reflect: true, attribute: 'data-active' })
-    active = true;
+    @state()
+    areButtonsDisabled = false;
 
     @property({ type: String, reflect: true, attribute: 'data-display-item' })
     displayItem = false;
@@ -35,12 +37,32 @@ export class DeviceItem extends LitElement {
     @property({ type: String, reflect: true, attribute: 'data-photo' })
     photo = '';
 
+    private menuClose = () => {
+        this.areButtonsDisabled = false;
+    };
+
+    private menuOpen = () => {
+        this.areButtonsDisabled = true;
+    };
+
+    connectedCallback() {
+        super.connectedCallback();
+        window.addEventListener('menu-close', this.menuClose);
+        window.addEventListener('menu-open', this.menuOpen);
+    }
+
+    disconnectedCallback() {
+        super.disconnectedCallback();
+        window.removeEventListener('menu-close', this.menuClose);
+        window.removeEventListener('menu-open', this.menuOpen);
+    }
+
     addDevice() {
-        this.dispatchEvent(new CustomEvent('add-device', { detail: this.arduinoID }));
+        addDevicePopup.open();
     }
 
     render() {
-        return html`<button class="button add-button" ?disabled=${!this.active}>
+        return html`<button class="button add-button" ?disabled=${this.areButtonsDisabled} @click=${this.addDevice}>
             <div class="material-symbols-outlined icon">add</div>
             Add Device
         </button>`;

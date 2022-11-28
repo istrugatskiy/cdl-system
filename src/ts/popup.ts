@@ -52,6 +52,7 @@ export class Popup extends LitElement {
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
         .overlay {
             position: fixed;
@@ -83,8 +84,9 @@ export class Popup extends LitElement {
         .x-button {
             align-self: flex-start;
         }
-        slot {
-            display: flex;
+        .large-icon {
+            font-size: 150px;
+            color: var(--dark-blue);
         }
     `;
 
@@ -113,17 +115,18 @@ export class Popup extends LitElement {
 
     async open() {
         if (this.isInStateTransition) return;
+        this.dispatchEvent(this.menuOpen);
         this.isInStateTransition = true;
         this.areButtonsDisabled = true;
         this.style.display = 'flex';
         await delay(500);
         this.isInStateTransition = false;
         this.areButtonsDisabled = false;
-        this.dispatchEvent(this.menuOpen);
     }
 
     async close() {
         if (this.isInStateTransition) return;
+        this.dispatchEvent(this.menuClose);
         this.areButtonsDisabled = true;
         this.isInStateTransition = true;
         this.closing = true;
@@ -131,16 +134,21 @@ export class Popup extends LitElement {
         this.isInStateTransition = false;
         this.style.display = 'none';
         this.closing = false;
-        this.dispatchEvent(this.menuClose);
     }
+
+    disableXButton = () => {
+        this.areButtonsDisabled = true;
+    };
 
     render() {
         return html`<div class="overlay ${this.closing ? 'disappear' : ''}">
             <div class="main-popup">
                 <div class="grid-top">
-                    <!--Scuffed Hack-->
+                    <!--Scuffed hack.-->
                     <div></div>
-                    <img src="${this.photo}" class="photo" alt="${this.photoName}" height="150" width="150" referrerpolicy="no-referrer" />
+                    <!--Allow icon support.-->
+                    <img src="${this.photo.startsWith('icon://') ? 'data:,' : this.photo}" ?hidden=${this.photo.startsWith('icon://')} class="photo" alt="${this.photoName}" height="150" width="150" referrerpolicy="no-referrer" />
+                    <span aria-label="${this.photoName}" role="img" class="material-symbols-outlined large-icon" ?hidden=${!this.photo.startsWith('icon://')}>${this.photo.replace('icon://', '')}</span>
                     <button class="button x-button" @click=${this.close} ?disabled=${this.areButtonsDisabled}><span class="material-symbols-outlined">close</span></button>
                 </div>
                 <slot></slot>

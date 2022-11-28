@@ -1,23 +1,18 @@
 import { html, css, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { assert, logout } from '.';
-import { button, h1 } from './common-styles';
-import { Popup } from './popup';
+import { logout } from '.';
+import { button, h1, p } from './common-styles';
+import { accountManagerPopup } from './constant-refs';
 
 @customElement('account-manager')
 export class AccountManager extends LitElement {
     static styles = css`
         ${button}
         ${h1}
+        ${p}
         h1 {
             margin-top: 0;
             margin-bottom: 0;
-        }
-        p {
-            color: var(--dark-blue);
-            font-family: var(--non-large-font);
-            text-align: justify;
-            font-size: 16px;
         }
         .parent {
             display: flex;
@@ -46,21 +41,19 @@ export class AccountManager extends LitElement {
 
     connectedCallback() {
         super.connectedCallback();
-        assert(this.parentElement instanceof Popup, 'Parent element of account manager is not a popup.');
-        (this.parentElement as Popup).addEventListener('menu-close', this.menuClose);
-        (this.parentElement as Popup).addEventListener('menu-open', this.menuOpen);
+        accountManagerPopup.addEventListener('menu-close', this.menuClose);
+        accountManagerPopup.addEventListener('menu-open', this.menuOpen);
     }
 
     disconnectedCallback() {
         super.disconnectedCallback();
-        (this.parentElement as Popup).removeEventListener('menu-close', this.menuClose);
-        (this.parentElement as Popup).removeEventListener('menu-open', this.menuOpen);
+        accountManagerPopup.removeEventListener('menu-close', this.menuClose);
+        accountManagerPopup.removeEventListener('menu-open', this.menuOpen);
     }
 
     logout() {
         logout();
-        assert(this.parentElement instanceof Popup, 'Parent element of account manager is not a popup.');
-        (this.parentElement as Popup).close();
+        accountManagerPopup.close();
     }
 
     render() {

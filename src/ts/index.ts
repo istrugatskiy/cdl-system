@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from 'firebase/auth';
-import { accountManagerPopup } from './constant-refs';
+import { accountManagerPopup, addDevicePopup } from './constant-refs';
+import './popup';
 
 // Initialize Firebase.
 initializeApp({
@@ -22,6 +23,7 @@ onAuthStateChanged(auth, (user) => {
     document.body.style.opacity = '1';
     if (user == null) {
         accountManagerPopup.close();
+        addDevicePopup.close();
         return;
     }
     document.querySelector('main-auth')?.remove();

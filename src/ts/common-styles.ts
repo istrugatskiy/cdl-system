@@ -14,6 +14,8 @@ export const button = css`
     .material-symbols-outlined {
         font-family: 'Material Symbols Outlined';
         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+        -webkit-user-select: none;
+        user-select: none;
     }
     button {
         appearance: button;
@@ -73,5 +75,14 @@ export const button = css`
         background-color: var(--light-green);
         border-color: var(--light-green);
         cursor: not-allowed;
+    }
+`;
+
+export const p = css`
+    p {
+        color: var(--dark-blue);
+        font-family: var(--non-large-font);
+        text-align: justify;
+        font-size: 16px;
     }
 `;
