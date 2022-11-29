@@ -16,7 +16,7 @@ void setup() {
     while (1);
   }
 
-  BLE.setLocalName("system-plant-waterer-glauk");
+  BLE.setLocalName("system-plant-waterer-ilya");
   BLE.setAdvertisedService(InternetService);
   InternetService.addCharacteristic(WiFiUsername);
   InternetService.addCharacteristic(WiFiPassword);
@@ -24,6 +24,7 @@ void setup() {
   WiFiUsername.writeValue(initName);
   WiFiPassword.writeValue(initPass);
   BLE.advertise();
+  Serial.println("test1");
 }
 
 void loop() {

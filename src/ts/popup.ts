@@ -39,7 +39,6 @@ export class Popup extends LitElement {
         .main-popup {
             background-color: white;
             margin: 10px;
-            padding: 10px;
             max-width: 800px;
             min-width: 300px;
             border-width: 6px;
@@ -51,8 +50,7 @@ export class Popup extends LitElement {
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden;
-            overflow-y: auto;
+            overflow: hidden visible;
             max-height: 90vh;
         }
         .overlay {
@@ -88,6 +86,11 @@ export class Popup extends LitElement {
         .large-icon {
             font-size: 150px;
             color: var(--dark-blue);
+        }
+        .max-height {
+            height: 100%;
+            overflow-y: auto;
+            padding: 10px;
         }
     `;
 
@@ -148,15 +151,17 @@ export class Popup extends LitElement {
     render() {
         return html`<div class="overlay ${this.closing ? 'disappear' : ''}">
             <div class="main-popup">
-                <div class="grid-top">
-                    <!--Scuffed hack.-->
-                    <div></div>
-                    <!--Allow icon support.-->
-                    <img src="${this.photo.startsWith('icon://') ? 'data:,' : this.photo}" ?hidden=${this.photo.startsWith('icon://')} class="photo" alt="${this.photoName}" height="150" width="150" referrerpolicy="no-referrer" />
-                    <span aria-label="${this.photoName}" role="img" class="material-symbols-outlined large-icon" ?hidden=${!this.photo.startsWith('icon://')}>${this.photo.replace('icon://', '')}</span>
-                    <button class="button x-button" @click=${this.close} ?disabled=${this.areButtonsDisabled}><span class="material-symbols-outlined">close</span></button>
+                <div class="max-height">
+                    <div class="grid-top">
+                        <!--Scuffed hack.-->
+                        <div></div>
+                        <!--Allow icon support.-->
+                        <img src="${this.photo.startsWith('icon://') ? 'data:,' : this.photo}" ?hidden=${this.photo.startsWith('icon://')} class="photo" alt="${this.photoName}" height="150" width="150" referrerpolicy="no-referrer" />
+                        <span aria-label="${this.photoName}" role="img" class="material-symbols-outlined large-icon" ?hidden=${!this.photo.startsWith('icon://')}>${this.photo.replace('icon://', '')}</span>
+                        <button class="button x-button" @click=${this.close} ?disabled=${this.areButtonsDisabled}><span class="material-symbols-outlined">close</span></button>
+                    </div>
+                    <slot></slot>
                 </div>
-                <slot></slot>
             </div>
         </div>`;
     }

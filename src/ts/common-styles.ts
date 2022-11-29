@@ -3,10 +3,15 @@ import { css } from 'lit';
 export const h1 = css`
     h1 {
         color: var(--dark-blue);
-        font-size: 48px;
+        font-size: 36px;
         font-family: var(--large-font);
         text-align: center;
         background-color: var(--light-green);
+    }
+    @media screen and (max-width: 450px) {
+        h1 {
+            font-size: 24px;
+        }
     }
 `;
 
@@ -47,7 +52,7 @@ export const button = css`
         align-items: center;
         font-family: var(--non-large-font);
         font-weight: normal;
-        font-size: 32px;
+        font-size: 24px;
         border-radius: 7px;
         border-style: solid;
         border-color: var(--light-green);

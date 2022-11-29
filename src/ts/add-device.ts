@@ -102,10 +102,12 @@ export class AddDevice extends LitElement {
             (this.parentElement as Popup).enableXButton();
             (this.parentElement as Popup).photo = 'icon://bluetooth_disabled';
         }
-        const device = await window.navigator.bluetooth.requestDevice({
-            filters: [{ services: ['bb6e107f-a364-45cc-90ad-b02df8261caf'] }],
-        });
-        console.log(device.name);
+        window.navigator.bluetooth
+            .requestDevice({
+                filters: [{ services: ['bb6e107f-a364-45cc-90ad-b02df8261caf'] }],
+            })
+            .then((device) => device.gatt?.connect())
+            .then((server) => server?.getPrimaryService('bb6e107f-a364-45cc-90ad-b02df8261caf'));
     }
 
     private menuClose = () => {
@@ -121,7 +123,6 @@ export class AddDevice extends LitElement {
         addDevicePopup.addEventListener('menu-close', this.menuClose);
         addDevicePopup.addEventListener('menu-open', this.menuOpen);
         if (!window.navigator.bluetooth) {
-            // fix later
             this.currentStep = 0;
             (this.parentElement as Popup).photo = 'icon://bluetooth_disabled';
         }
@@ -141,8 +142,8 @@ export class AddDevice extends LitElement {
                 <!-- Bluetooth not supported -->
                 <div ?hidden=${this.currentStep != 0}>
                     <p>
-                        Bluetooth is not supported on this device. Although you can monitor your devices you cannot add them using this browser. The bluetooth API is only supported on Chrome and Edge on Windows, Android, and Chrome OS. Linux users
-                        need to manually enable the flag <code>chrome://flags/#enable-experimental-web-platform-features</code>.
+                        Bluetooth is not supported (or enabled) on this device. Although you can monitor your devices you cannot add them using this browser. The bluetooth API is only supported on Chrome and Edge on Windows, Android, and Chrome OS.
+                        Linux users need to manually enable the flag <code>chrome://flags/#enable-experimental-web-platform-features</code>. If you are using Chrome on a supported platform make sure that bluetooth is enabled in settings.
                     </p>
                 </div>
                 <!-- Step 1 -->
