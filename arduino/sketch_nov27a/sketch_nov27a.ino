@@ -9,15 +9,16 @@ String initName = "";
 String initPass = "";
 void setup() {
   Serial.begin(9600);
-  while (!Serial);
+  while (!Serial)
+    ;
   if (!BLE.begin()) {
     Serial.println("starting Bluetooth® Low Energy module failed!");
 
-    while (1);
+    while (1)
+      ;
   }
 
   BLE.setLocalName("system-plant-waterer-ilya");
-  BLE.setAdvertisedService(InternetService);
   InternetService.addCharacteristic(WiFiUsername);
   InternetService.addCharacteristic(WiFiPassword);
   BLE.addService(InternetService);
@@ -28,25 +29,17 @@ void setup() {
 }
 
 void loop() {
-    BLEDevice central = BLE.central();
+  BLEDevice central = BLE.central();
+  if (central) {
+    Serial.print("Connected to central: ");
+    Serial.println(central.address());
 
-  if ( central )
-  {
-    Serial.print( "Connected to central: " );
-    Serial.println( central.address() );
-
-    while ( central.connected() )
-    {
-      if ( WiFiUsername.written() )
-      {
+    while (central.connected()) {
+      if (WiFiUsername.written()) {
         initName = WiFiUsername.value();
-        Serial.print( "New file name: " );
-        Serial.println( initName );
+        Serial.print("New file name: ");
+        Serial.println(initName);
       }
     }
-
-    Serial.print( F( "Disconnected from central: " ) );
-    Serial.println( central.address() );
   }
-
 }

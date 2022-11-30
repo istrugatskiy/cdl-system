@@ -52,6 +52,7 @@ export class Popup extends LitElement {
             justify-content: center;
             overflow: hidden visible;
             max-height: 90vh;
+            transition: height 0.3s ease-in-out;
         }
         .overlay {
             position: fixed;
@@ -90,6 +91,7 @@ export class Popup extends LitElement {
         .max-height {
             height: 100%;
             overflow-y: auto;
+            overflow-x: hidden;
             padding: 10px;
         }
     `;

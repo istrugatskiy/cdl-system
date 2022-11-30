@@ -84,13 +84,14 @@ export class AddDevice extends LitElement {
     private async step2(event: KeyboardEvent | MouseEvent) {
         if (event instanceof KeyboardEvent && event.key !== 'Enter') return;
         this.areButtonsDisabled = true;
-        addDevicePopup.disableXButton();
         this.isInTransition = true;
+        (this.parentElement as Popup).disableXButton();
         await delay(410);
         this.currentStep = 2;
         await delay(410);
         this.isInTransition = false;
         this.areButtonsDisabled = false;
+        (this.parentElement as Popup).enableXButton();
     }
 
     private async step3(event: KeyboardEvent | MouseEvent) {
@@ -102,16 +103,26 @@ export class AddDevice extends LitElement {
             (this.parentElement as Popup).enableXButton();
             (this.parentElement as Popup).photo = 'icon://bluetooth_disabled';
         }
+        const encoder = new TextEncoder();
         window.navigator.bluetooth
             .requestDevice({
                 filters: [{ services: ['bb6e107f-a364-45cc-90ad-b02df8261caf'] }],
             })
             .then((device) => device.gatt?.connect())
-            .then((server) => server?.getPrimaryService('bb6e107f-a364-45cc-90ad-b02df8261caf'));
+            .then((server) => server?.getPrimaryService('bb6e107f-a364-45cc-90ad-b02df8261caf'))
+            .then((service) => service?.getCharacteristic('fe6a4a69-1125-4eb3-ba33-08249ef05bbd'))
+            .then((characteristic) => characteristic?.writeValue(encoder.encode('Hello World!')))
+            .catch((error) => {
+                console.error(error);
+            });
     }
 
-    private menuClose = () => {
+    private menuClose = async () => {
         this.areButtonsDisabled = true;
+        if (!window.navigator.bluetooth) return;
+        await delay(410);
+        this.currentStep = 1;
+        (this.parentElement as Popup).photo = 'icon://wifi_password';
     };
 
     private menuOpen = () => {
