@@ -19,27 +19,36 @@ void setup() {
   }
 
   BLE.setLocalName("system-plant-waterer-ilya");
+  BLE.setDeviceName("system-plant-waterer-ilya");
   InternetService.addCharacteristic(WiFiUsername);
   InternetService.addCharacteristic(WiFiPassword);
   BLE.addService(InternetService);
   WiFiUsername.writeValue(initName);
   WiFiPassword.writeValue(initPass);
+  BLE.setAdvertisedService(InternetService);
   BLE.advertise();
   Serial.println("test1");
 }
 
 void loop() {
   BLEDevice central = BLE.central();
-  if (central) {
-    Serial.print("Connected to central: ");
-    Serial.println(central.address());
 
-    while (central.connected()) {
-      if (WiFiUsername.written()) {
+  if ( central )
+  {
+    Serial.print( "Connected to central: " );
+    Serial.println( central.address() );
+
+    while ( central.connected() )
+    {
+      if ( WiFiUsername.written() )
+      {
         initName = WiFiUsername.value();
-        Serial.print("New file name: ");
-        Serial.println(initName);
+        Serial.print( "New file name: " );
+        Serial.println( initName );
       }
     }
+
+    Serial.print( F( "Disconnected from central: " ) );
+    Serial.println( central.address() );
   }
 }
