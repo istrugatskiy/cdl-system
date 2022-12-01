@@ -112,6 +112,7 @@ export class AddDevice extends LitElement {
             .then((server) => server?.getPrimaryService('bb6e107f-a364-45cc-90ad-b02df8261caf'))
             .then((service) => service?.getCharacteristic('fe6a4a69-1125-4eb3-ba33-08249ef05bbd'))
             .then((characteristic) => characteristic?.writeValue(encoder.encode('Hello World!')))
+            .then(() => console.log('Successfuly wrote to device.'))
             .catch((error) => {
                 console.error(error);
             });
