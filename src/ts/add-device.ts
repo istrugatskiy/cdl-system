@@ -1,5 +1,5 @@
 import { html, css, LitElement } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
+import { customElement, query, state } from 'lit/decorators.js';
 import { delay } from '.';
 import { button, h1, p } from './common-styles';
 import { addDevicePopup } from './constant-refs';
@@ -81,6 +81,12 @@ export class AddDevice extends LitElement {
     @state()
     isInTransition = false;
 
+    @query('#username')
+    private usernameInput: HTMLInputElement | undefined;
+
+    @query('#password')
+    private passwordInput: HTMLInputElement | undefined;
+
     private async step2(event: KeyboardEvent | MouseEvent) {
         if (event instanceof KeyboardEvent && event.key !== 'Enter') return;
         this.areButtonsDisabled = true;
@@ -95,7 +101,7 @@ export class AddDevice extends LitElement {
     }
 
     private async step3(event: KeyboardEvent | MouseEvent) {
-        if (event instanceof KeyboardEvent && event.key !== 'Enter') return;
+        if (event instanceof KeyboardEvent && event.key !== 'Enter' && this.usernameInput!.value.length > 0) return;
         this.areButtonsDisabled = true;
         const availability = await window.navigator.bluetooth.getAvailability();
         if (!availability) {
@@ -111,7 +117,7 @@ export class AddDevice extends LitElement {
             .then((device) => device.gatt?.connect())
             .then((server) => server?.getPrimaryService('bb6e107f-a364-45cc-90ad-b02df8261caf'))
             .then((service) => service?.getCharacteristic('fe6a4a69-1125-4eb3-ba33-08249ef05bbd'))
-            .then((characteristic) => characteristic?.writeValue(encoder.encode('Hello World!')))
+            .then((characteristic) => characteristic?.writeValue(encoder.encode(this.usernameInput!.value)))
             .then(() => console.log('Successfuly wrote to device.'))
             .catch((error) => {
                 console.error(error);
@@ -164,11 +170,11 @@ export class AddDevice extends LitElement {
                         To proceed your system plant watering device needs <i>continuous</i> access to a Wi-Fi network. For this step we recommend using your home's Wi-Fi network. Please note: Your network credentials are not shared with our servers
                         and are securely transferred by bluetooth to your device.
                     </p>
-                    <h1>Username:</h1>
-                    <input type="text" class="button" placeholder="Your Wi-Fi's username" ?disabled=${this.areButtonsDisabled} />
-                    <h1>Password:</h1>
+                    <h1>Username (required):</h1>
+                    <input type="text" class="button" placeholder="Your Wi-Fi's username" ?disabled=${this.areButtonsDisabled} id="username" />
+                    <h1>Password (optional):</h1>
                     <p>Leave this blank if your network has no password.</p>
-                    <input type="password" class="button" placeholder="Wi-fi password" ?disabled=${this.areButtonsDisabled} />
+                    <input type="password" class="button" placeholder="Wi-fi password" ?disabled=${this.areButtonsDisabled} id="password" />
                     <button class="button" ?disabled=${this.areButtonsDisabled} @click=${this.step2}>Connect</button>
                 </div>
                 <!-- Step 2 -->
