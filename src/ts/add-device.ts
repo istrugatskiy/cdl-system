@@ -2,7 +2,7 @@ import { html, css, LitElement } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import { delay } from '.';
 import { button, h1, p } from './common-styles';
-import { addDevicePopup } from './constant-refs';
+import { addDevicePopup, passwordRegex, SSIDRegex } from './constant-refs';
 import { Popup } from './popup';
 
 // Fixes customElementRegistry being written to twice.
@@ -82,13 +82,13 @@ export class AddDevice extends LitElement {
     isInTransition = false;
 
     @query('#username')
-    private usernameInput: HTMLInputElement | undefined;
+    private SSIDInput: HTMLInputElement | undefined;
 
     @query('#password')
     private passwordInput: HTMLInputElement | undefined;
 
     private async step2(event: KeyboardEvent | MouseEvent) {
-        if (event instanceof KeyboardEvent && event.key !== 'Enter') return;
+        if ((event instanceof KeyboardEvent && event.key !== 'Enter') || !SSIDRegex.test(this.SSIDInput!.value) || !passwordRegex.test(this.passwordInput!.value)) return;
         this.areButtonsDisabled = true;
         this.isInTransition = true;
         (this.parentElement as Popup).disableXButton();
@@ -101,7 +101,7 @@ export class AddDevice extends LitElement {
     }
 
     private async step3(event: KeyboardEvent | MouseEvent) {
-        if (event instanceof KeyboardEvent && event.key !== 'Enter' && this.usernameInput!.value.length > 0) return;
+        if (event instanceof KeyboardEvent && event.key !== 'Enter') return;
         this.areButtonsDisabled = true;
         const availability = await window.navigator.bluetooth.getAvailability();
         if (!availability) {
@@ -110,18 +110,16 @@ export class AddDevice extends LitElement {
             (this.parentElement as Popup).photo = 'icon://bluetooth_disabled';
         }
         const encoder = new TextEncoder();
-        window.navigator.bluetooth
-            .requestDevice({
-                filters: [{ services: ['bb6e107f-a364-45cc-90ad-b02df8261caf'] }],
-            })
-            .then((device) => device.gatt?.connect())
-            .then((server) => server?.getPrimaryService('bb6e107f-a364-45cc-90ad-b02df8261caf'))
-            .then((service) => service?.getCharacteristic('fe6a4a69-1125-4eb3-ba33-08249ef05bbd'))
-            .then((characteristic) => characteristic?.writeValue(encoder.encode(this.usernameInput!.value)))
-            .then(() => console.log('Successfuly wrote to device.'))
-            .catch((error) => {
-                console.error(error);
-            });
+        const device = await window.navigator.bluetooth.requestDevice({
+            filters: [{ services: ['bb6e107f-a364-45cc-90ad-b02df8261caf'] }],
+        });
+        const server = await device.gatt?.connect();
+        const service = await server?.getPrimaryService('bb6e107f-a364-45cc-90ad-b02df8261caf');
+        const ssid = await service?.getCharacteristic('fe6a4a69-1125-4eb3-ba33-08249ef05bbd');
+        const password = await service?.getCharacteristic('c347d530-854b-42a9-a5be-7bcd8c5bd432');
+        await ssid?.writeValue(encoder.encode(this.SSIDInput!.value));
+        await password?.writeValue(encoder.encode(this.passwordInput!.value));
+        server?.disconnect();
     }
 
     private menuClose = async () => {
@@ -129,6 +127,8 @@ export class AddDevice extends LitElement {
         if (!window.navigator.bluetooth) return;
         await delay(410);
         this.currentStep = 1;
+        this.SSIDInput!.value = '';
+        this.passwordInput!.value = '';
         (this.parentElement as Popup).photo = 'icon://wifi_password';
     };
 
@@ -152,6 +152,10 @@ export class AddDevice extends LitElement {
         addDevicePopup.removeEventListener('menu-open', this.menuOpen);
     }
 
+    checkInput = () => {
+        this.requestUpdate();
+    };
+
     render() {
         return html`
             <div class="${this.isInTransition ? 'transition-animation' : ''}">
@@ -171,11 +175,11 @@ export class AddDevice extends LitElement {
                         and are securely transferred by bluetooth to your device.
                     </p>
                     <h1>Username (required):</h1>
-                    <input type="text" class="button" placeholder="Your Wi-Fi's username" ?disabled=${this.areButtonsDisabled} id="username" />
+                    <input type="text" class="button" placeholder="Your Wi-Fi's username" ?disabled=${this.areButtonsDisabled} id="username" maxlength="32" @input=${this.checkInput} autocomplete="username" />
                     <h1>Password (optional):</h1>
                     <p>Leave this blank if your network has no password.</p>
-                    <input type="password" class="button" placeholder="Wi-fi password" ?disabled=${this.areButtonsDisabled} id="password" />
-                    <button class="button" ?disabled=${this.areButtonsDisabled} @click=${this.step2}>Connect</button>
+                    <input type="password" class="button" placeholder="Wi-fi password" ?disabled=${this.areButtonsDisabled} id="password" maxlength="64" @input=${this.checkInput} autocomplete="current-password" />
+                    <button class="button" ?disabled=${this.areButtonsDisabled || !SSIDRegex.test(this.SSIDInput!.value) || !passwordRegex.test(this.passwordInput!.value)} @click=${this.step2}>Connect</button>
                 </div>
                 <!-- Step 2 -->
                 <div class="flex" ?hidden=${this.currentStep !== 2} @keydown=${this.step3}>
