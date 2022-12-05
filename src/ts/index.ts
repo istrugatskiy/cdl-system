@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from 'firebase/auth';
 import { accountManagerPopup, addDevicePopup } from './constant-refs';
+import { getMessaging, getToken } from 'firebase/messaging';
 import './popup';
 
 // Initialize Firebase.
@@ -19,7 +20,7 @@ const auth = getAuth();
 const main = document.querySelector('#main') as HTMLDivElement;
 
 // Handles authState and related animations.
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     document.body.style.opacity = '1';
     if (user == null) {
         accountManagerPopup.close();
@@ -39,7 +40,21 @@ onAuthStateChanged(auth, (user) => {
     home.dataset.name = name;
     home.dataset.photo = user.photoURL!;
     home.dataset.uid = user.uid;
+    setupMessaging();
 });
+
+const setupMessaging = async () => {
+    console.log('Setting up messaging');
+    (await navigator.serviceWorker.getRegistrations()).forEach((reg) => {
+        console.log('Found service worker registration', reg);
+        reg.unregister();
+    });
+    const sw = await navigator.serviceWorker.register(new URL('sw.ts', import.meta.url), { type: 'module' });
+    const messaging = getMessaging();
+    getToken(messaging, { vapidKey: 'BCQInMtzJKJTH9lcDgDpGjKMSRKdar1nu0AUNHD7b7ShTDssKlG1HrsuQalnYHqXljdcsoNe_bBW2SVv9Wkh87k', serviceWorkerRegistration: sw }).then((token) => {
+        console.log('Token: ', token);
+    });
+};
 
 export const login = () => {
     signInWithRedirect(auth, provider);

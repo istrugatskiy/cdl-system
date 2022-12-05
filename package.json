@@ -1,21 +1,26 @@
 {
-  "name": "cdl-system",
-  "version": "1.0.0",
-  "description": "CDL Plant Project",
-  "author": "Alex, Ilya, Joe, Lev, Maeve, Max",
-  "license": "No license",
-  "private": true,
-  "dependencies": {
-    "firebase": "^9.12.1",
-    "firebase-tools": "^11.15.0",
-    "global": "^4.4.0",
-    "lit": "^2.4.0",
-    "parcel": "^2.7.0"
-  },
-  "devDependencies": {
-    "@parcel/transformer-sass": "^2.7.0",
-    "@types/parcel-env": "^0.0.1",
-    "@types/web-bluetooth": "^0.0.16",
-    "process": "^0.11.10"
-  }
+    "name": "cdl-system",
+    "version": "1.0.0",
+    "description": "CDL Plant Project",
+    "author": "Alex, Ilya, Joe, Lev, Maeve, Max",
+    "license": "No license",
+    "private": true,
+    "dependencies": {
+        "@parcel/transformer-raw": "^2.8.0",
+        "firebase": "^9.12.1",
+        "firebase-tools": "^11.15.0",
+        "global": "^4.4.0",
+        "lit": "^2.4.0",
+        "parcel": "^2.7.0"
+    },
+    "devDependencies": {
+        "@parcel/transformer-sass": "^2.7.0",
+        "@types/parcel-env": "^0.0.1",
+        "@types/web-bluetooth": "^0.0.16",
+        "parcel-reporter-static-files-copy": "^1.4.0",
+        "process": "^0.11.10"
+    },
+    "staticFiles": {
+        "staticPath": "./src/sw"
+    }
 }
