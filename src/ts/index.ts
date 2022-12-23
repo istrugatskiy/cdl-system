@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from 'firebase/auth';
 import { accountManagerPopup, addDevicePopup } from './constant-refs';
 import { getMessaging, getToken } from 'firebase/messaging';
+import { getFirestore, setDoc, doc } from 'firebase/firestore';
 import './popup';
 
 // Initialize Firebase.
@@ -18,6 +19,7 @@ initializeApp({
 const provider = new GoogleAuthProvider();
 const auth = getAuth();
 const main = document.querySelector('#main') as HTMLDivElement;
+const db = getFirestore();
 
 // Handles authState and related animations.
 onAuthStateChanged(auth, async (user) => {
@@ -51,8 +53,8 @@ const setupMessaging = async () => {
     });
     const sw = await navigator.serviceWorker.register(new URL('sw.ts', import.meta.url), { type: 'module' });
     const messaging = getMessaging();
-    getToken(messaging, { vapidKey: 'BCQInMtzJKJTH9lcDgDpGjKMSRKdar1nu0AUNHD7b7ShTDssKlG1HrsuQalnYHqXljdcsoNe_bBW2SVv9Wkh87k', serviceWorkerRegistration: sw }).then((token) => {
-        console.log('Token: ', token);
+    getToken(messaging, { vapidKey: 'BCQInMtzJKJTH9lcDgDpGjKMSRKdar1nu0AUNHD7b7ShTDssKlG1HrsuQalnYHqXljdcsoNe_bBW2SVv9Wkh87k', serviceWorkerRegistration: sw }).then(async (token) => {
+        await setDoc(doc(db, 'users', auth.currentUser!.uid), { notificationId: token });
     });
 };
 
