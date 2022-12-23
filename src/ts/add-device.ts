@@ -115,7 +115,7 @@ export class AddDevice extends LitElement {
         });
         const server = await device.gatt?.connect();
         const service = await server?.getPrimaryService('bb6e107f-a364-45cc-90ad-b02df8261caf');
-        const ssid = await service?.getCharacteristic('fe6a4a69-1125-4eb3-ba33-08249ef05bbd');
+        const ssid = await service?.getCharacteristic('bb6e107f-a364-45cc-90ad-b02df8261caf');
         const password = await service?.getCharacteristic('c347d530-854b-42a9-a5be-7bcd8c5bd432');
         await ssid?.writeValue(encoder.encode(this.SSIDInput!.value));
         await password?.writeValue(encoder.encode(this.passwordInput!.value));

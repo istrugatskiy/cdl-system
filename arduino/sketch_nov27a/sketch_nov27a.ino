@@ -45,7 +45,6 @@ void resetEEPROM()
 
 void initBLE()
 {
-  BLE.setLocalName("system-plant-waterer-ilya");
   BLE.setDeviceName("system-plant-waterer-ilya");
   InternetService.addCharacteristic(WiFiUsername);
   InternetService.addCharacteristic(WiFiPassword);
