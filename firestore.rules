@@ -6,9 +6,12 @@ service cloud.firestore {
         return request.auth != null && request.auth.uid == uuid;        
       }
       allow read: if canTouch();
-      allow write: if canTouch()
+      allow create: if canTouch()
       && request.resource.data.notificationId is string
-      && request.resource.data.keys().hasOnly(['notificationId']);
+      && request.resource.data.hasOnly(['notificationId']);
+      allow update: if canTouch()
+      && request.resource.data.notificationId is string
+      && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['notificationId']);
     }
   }
 }

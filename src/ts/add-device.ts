@@ -1,9 +1,10 @@
 import { html, css, LitElement } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
-import { delay } from '.';
+import { delay, handleError } from './';
 import { button, h1, p } from './common-styles';
 import { addDevicePopup, passwordRegex, SSIDRegex } from './constant-refs';
 import { Popup } from './popup';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 
 // Fixes customElementRegistry being written to twice.
 if (module.hot) {
@@ -11,6 +12,15 @@ if (module.hot) {
         window.location.reload();
     });
 }
+
+type deviceConfig = {
+    name: string;
+    optimalMoisture: number;
+};
+
+type addDeviceResponse = {
+    deviceId: string;
+};
 
 @customElement('add-device')
 export class AddDevice extends LitElement {
@@ -82,22 +92,56 @@ export class AddDevice extends LitElement {
     isInTransition = false;
 
     @query('#username')
-    private SSIDInput: HTMLInputElement | undefined;
+    private SSIDInput?: HTMLInputElement;
 
     @query('#password')
-    private passwordInput: HTMLInputElement | undefined;
+    private passwordInput?: HTMLInputElement;
 
-    private async step2(event: KeyboardEvent | MouseEvent) {
-        if ((event instanceof KeyboardEvent && event.key !== 'Enter') || !SSIDRegex.test(this.SSIDInput!.value) || !passwordRegex.test(this.passwordInput!.value)) return;
+    @query('#device-name')
+    private deviceNameInput?: HTMLInputElement;
+
+    @query('#moisture-level')
+    private moistureLevelInput?: HTMLInputElement;
+
+    private arduinoUUID = '';
+
+    private async step1(event: KeyboardEvent | MouseEvent, step = 2, beforeContinue?: () => Promise<void>) {
+        if (event instanceof KeyboardEvent && event.key !== 'Enter') return;
         this.areButtonsDisabled = true;
-        this.isInTransition = true;
         (this.parentElement as Popup).disableXButton();
+        if (beforeContinue) await beforeContinue();
+        this.isInTransition = true;
         await delay(410);
-        this.currentStep = 2;
+        this.currentStep = step;
         await delay(410);
         this.isInTransition = false;
         this.areButtonsDisabled = false;
         (this.parentElement as Popup).enableXButton();
+    }
+
+    private async step2(event: KeyboardEvent | MouseEvent) {
+        if ((event instanceof KeyboardEvent && event.key !== 'Enter') || !SSIDRegex.test(this.SSIDInput!.value) || !passwordRegex.test(this.passwordInput!.value)) return;
+        try {
+            await this.step1(event, 3, async () => {
+                const deviceConfig: deviceConfig = {
+                    name: this.deviceNameInput!.value,
+                    optimalMoisture: parseInt(this.moistureLevelInput!.value),
+                };
+                deviceConfig.name ??= 'Unnamed Device';
+                deviceConfig.optimalMoisture ??= 50;
+                if (Number.isNaN(deviceConfig.optimalMoisture)) deviceConfig.optimalMoisture = 50;
+                deviceConfig.optimalMoisture /= 100;
+                const functions = getFunctions();
+                const addDevice = httpsCallable(functions, 'addDevice');
+                const result = await addDevice(deviceConfig);
+                const data = result.data as addDeviceResponse;
+                this.arduinoUUID = data.deviceId;
+            });
+        } catch (e) {
+            let error = e as Error;
+            console.error(error);
+            handleError(error);
+        }
     }
 
     private async step3(event: KeyboardEvent | MouseEvent) {
@@ -117,9 +161,15 @@ export class AddDevice extends LitElement {
         const service = await server?.getPrimaryService('bb6e107f-a364-45cc-90ad-b02df8261caf');
         const ssid = await service?.getCharacteristic('bb6e107f-a364-45cc-90ad-b02df8261caf');
         const password = await service?.getCharacteristic('c347d530-854b-42a9-a5be-7bcd8c5bd432');
+        const uuid = await service?.getCharacteristic('9ee24231-0201-4fa1-96b1-d05690f65a84');
         await ssid?.writeValue(encoder.encode(this.SSIDInput!.value));
         await password?.writeValue(encoder.encode(this.passwordInput!.value));
+        await uuid?.writeValue(encoder.encode(this.arduinoUUID));
         server?.disconnect();
+        this.step1(event, 4, async () => {
+            await delay(410);
+            (this.parentElement as Popup).photo = 'icon://done';
+        });
     }
 
     private menuClose = async () => {
@@ -129,6 +179,8 @@ export class AddDevice extends LitElement {
         this.currentStep = 1;
         this.SSIDInput!.value = '';
         this.passwordInput!.value = '';
+        this.deviceNameInput!.value = '';
+        this.moistureLevelInput!.value = '';
         (this.parentElement as Popup).photo = 'icon://wifi_password';
     };
 
@@ -159,7 +211,8 @@ export class AddDevice extends LitElement {
     render() {
         return html`
             <div class="${this.isInTransition ? 'transition-animation' : ''}">
-                <h1 ?hidden=${this.currentStep == 0}>Connect (step ${this.currentStep} of 3):</h1>
+                <h1 ?hidden=${this.currentStep == 0 || this.currentStep == 4}>Connect (step ${this.currentStep} of 3):</h1>
+                <h1 ?hidden=${this.currentStep != 4}>Success!</h1>
                 <h1 ?hidden=${this.currentStep != 0}>No Bluetooth Support!</h1>
                 <!-- Bluetooth not supported -->
                 <div ?hidden=${this.currentStep != 0}>
@@ -169,7 +222,18 @@ export class AddDevice extends LitElement {
                     </p>
                 </div>
                 <!-- Step 1 -->
-                <div class="flex" ?hidden=${this.currentStep !== 1} @keydown=${this.step2}>
+                <div class="flex" ?hidden=${this.currentStep !== 1} @keydown=${this.step1}>
+                    <p>
+                        First, lets name your device and select the optimal moisture level it should try to keep the plant at. The moisture level is a percentage value between 0 and 100. It is read using a moisture sensor placed in your plant's soil.
+                    </p>
+                    <h1>Device Name (required):</h1>
+                    <input type="text" class="button" placeholder="Device Name" ?disabled=${this.areButtonsDisabled} id="device-name" maxlength="20" @input=${this.checkInput} autocomplete="off" />
+                    <h1>Moisture Level (required):</h1>
+                    <input type="number" class="button" placeholder="50%" ?disabled=${this.areButtonsDisabled} id="moisture-level" min="0" max="100" @input=${this.checkInput} autocomplete="off" />
+                    <button class="button" ?disabled=${this.areButtonsDisabled || !this.deviceNameInput?.value} @click=${this.step1}>Continue</button>
+                </div>
+                <!-- Step 2 -->
+                <div class="flex" ?hidden=${this.currentStep !== 2} @keydown=${this.step2}>
                     <p>
                         To proceed your system plant watering device needs <i>continuous</i> access to a Wi-Fi network. For this step we recommend using your home's Wi-Fi network. Please note: Your network credentials are not shared with our servers
                         and are securely transferred by bluetooth to your device.
@@ -181,13 +245,18 @@ export class AddDevice extends LitElement {
                     <input type="password" class="button" placeholder="Wi-fi password" ?disabled=${this.areButtonsDisabled} id="password" maxlength="64" @input=${this.checkInput} autocomplete="current-password" />
                     <button class="button" ?disabled=${this.areButtonsDisabled || !SSIDRegex.test(this.SSIDInput!.value) || !passwordRegex.test(this.passwordInput!.value)} @click=${this.step2}>Connect</button>
                 </div>
-                <!-- Step 2 -->
-                <div class="flex" ?hidden=${this.currentStep !== 2} @keydown=${this.step3}>
+                <!-- Step 3 -->
+                <div class="flex" ?hidden=${this.currentStep !== 3} @keydown=${this.step3}>
                     <p>
                         To proceed you'll need to connect to your system device via bluetooth from your browser. From the popup that will appear select the device named in the format <i>"system-plant-waterer-[device-id]"</i>. Make sure that it is
                         your device!
                     </p>
                     <button class="button" @click=${this.step3}>Upload Wi-Fi Credentials</button>
+                </div>
+                <!-- Success -->
+                <div class="flex" ?hidden=${this.currentStep !== 4}>
+                    <p>Your device has been successfully added! You can now monitor it from your dashboard. Make sure that your device has a good internet connection for the best experience. You can now close this popup.</p>
+                    <button class="button" @click=${(this.parentElement as Popup).close}>Close</button>
                 </div>
             </div>
         `;

@@ -8,8 +8,6 @@
     "dependencies": {
         "@parcel/transformer-raw": "^2.8.0",
         "firebase": "^9.12.1",
-        "firebase-tools": "^11.15.0",
-        "global": "^4.4.0",
         "lit": "^2.4.0",
         "parcel": "^2.7.0"
     },

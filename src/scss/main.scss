@@ -47,3 +47,12 @@ body {
 .main-home {
     align-items: start !important;
 }
+.hidden {
+    display: none;
+}
+.fatal-error {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}

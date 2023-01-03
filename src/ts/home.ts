@@ -4,6 +4,17 @@ import { button, h1 } from './common-styles';
 import { accountManager, accountManagerPopup } from './constant-refs';
 import './device-item';
 
+type device = {
+    createdAt: number;
+    name: string;
+    // Timestamp: moisture as proportion from 0 to 1.
+    moistureData: { [key: number]: number };
+    // Timestamp of last watered
+    waterTimes: number[];
+    // Proportion from 0 to 1.
+    optimalMoisture: number;
+};
+
 @customElement('home-page')
 export class HomePage extends LitElement {
     static styles = css`
@@ -35,9 +46,9 @@ export class HomePage extends LitElement {
         }
         .bottom-container {
             margin-top: 20px;
-            display: grid;
+            display: flex;
             width: 100vw;
-            justify-items: center;
+            justify-content: center;
         }
     `;
 
@@ -61,6 +72,9 @@ export class HomePage extends LitElement {
 
     @property({ type: String, reflect: true, attribute: 'data-uid' })
     uid = '';
+
+    @property({ type: Object, reflect: false })
+    deviceList: { [key: string]: device } = {};
 
     @state()
     private areButtonsDisabled = false;
@@ -90,6 +104,7 @@ export class HomePage extends LitElement {
                 </button>
             </div>
             <div class="bottom-container">
+                ${Object.entries(this.deviceList ?? {}).map(([key, value], index) => html`<device-item data-device-order="${index}" data-device-name="${value.name}" data-arduino-id="${key}" ?data-display-item=${true}></device-item>`)}
                 <device-item></device-item>
             </div>
         `;
