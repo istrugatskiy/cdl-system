@@ -1,12 +1,13 @@
 #include <EEPROM.h>
-#include <WiFiUdp.h>
-#include <WiFi.h>
+#include <SPI.h>
+#include <WiFiNINA.h>
 
 char serverUrl[] = "us-central1-system-collab-garbage.cloudfunctions.net";
 int lastTime = 0;
 int timeDelay = 15000;
 int optimalMoisture = 0.5;
 WiFiSSLClient wifi;
+String uuid = "";
 
 void setup()
 {
@@ -22,6 +23,7 @@ void setup()
     int pass_len = password.length() + 1;
     char _pass[pass_len];
     password.toCharArray(_pass, pass_len);
+    uuid = readStringFromEEPROM(97);
     while (status != WL_CONNECTED)
     {
         // I've redacted my WiFi password.
@@ -43,9 +45,10 @@ void loop()
             // Sends test data, modify this so that the values for powerOutput and totalPower are dynamic.
             // Hint: Use string concatenation.
             String content = "{ \"arduinoID\": \"";
-            content += readStringFromEEPROM(97);
+            content += uuid;
             content += "\", \"moisture\": 0.5, \"hasWatered\": true }";
-            if (wifi.connect(serverUrl, 443))
+            Serial.println(wifi.connectSSL(serverUrl, 443));
+            if (wifi.connectSSL(serverUrl, 443))
             {
                 Serial.println("Connected to server...");
                 wifi.println("POST /status HTTP/1.1");

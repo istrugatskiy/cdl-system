@@ -25,7 +25,7 @@ void setup()
     while (1)
       ;
   }
-  // resetEEPROM();
+  resetEEPROM();
   ssid = readStringFromEEPROM(0);
   password = readStringFromEEPROM(33);
   firebaseUUID = readStringFromEEPROM(97);

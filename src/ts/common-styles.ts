@@ -91,3 +91,58 @@ export const p = css`
         font-size: 16px;
     }
 `;
+
+export const transitionablePopupChild = css`
+    .flex {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    @keyframes slide-out {
+        0% {
+            transform: scale(1);
+        }
+        25% {
+            transform: translateX(0) scale(0.8);
+            opacity: 1;
+        }
+        50% {
+            transform: translateX(-50%) scale(0.7);
+            opacity: 0;
+        }
+        70% {
+            opacity: 0;
+            transform: translateX(50%);
+        }
+        100% {
+            transform: scale(1) translateX(0);
+            opacity: 1;
+        }
+    }
+    .transition-animation {
+        animation: slide-out 0.82s;
+        animation-timing-function: cubic-bezier(0.29, 0.09, 0.07, 1.2);
+    }
+    input {
+        cursor: text !important;
+        margin: 10px;
+    }
+    input::placeholder {
+        color: var(--light-green);
+        font-family: var(--non-large-font);
+    }
+    input:disabled {
+        background-color: white !important;
+    }
+    h1 {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    p {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    *[hidden] {
+        display: none !important;
+    }
+`;

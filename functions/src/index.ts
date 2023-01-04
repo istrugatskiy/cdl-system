@@ -102,15 +102,48 @@ export const addDevice = functions.runWith({ maxInstances: MAX_FUNCTION_INSTANCE
     return { deviceId };
 });
 
-export const status = functions.https.onRequest(async (request, response) => {
+export const deleteDevice = functions.runWith({ maxInstances: MAX_FUNCTION_INSTANCES }).https.onCall(async (data, context) => {
+    if (typeof data !== 'object' || data === null) {
+        throw new functions.https.HttpsError('invalid-argument', 'Data must be provided');
+    }
+    if (typeof data.deviceId !== 'string' || data.deviceId.length !== 36) {
+        throw new functions.https.HttpsError('invalid-argument', 'Device ID must be a string of length 36');
+    }
+    const { auth } = context;
+    if (!auth) {
+        throw new functions.https.HttpsError('unauthenticated', 'User must be authenticated');
+    }
+    // Get the user's profile from the users collection.
+    const { uid } = auth;
+    // Get firestore
+    const db = admin.firestore();
+    // Get the user's profile from the users collection.
+    const userRef = db.collection('users').doc(uid);
+    const user = (await userRef.get()).data() as user | undefined;
+    if (!user) {
+        throw new functions.https.HttpsError('not-found', 'User not found');
+    }
+    if (!user.devices) {
+        throw new functions.https.HttpsError('not-found', 'User has no devices');
+    }
+    if (!user.devices[data.deviceId]) {
+        throw new functions.https.HttpsError('not-found', 'Device not found');
+    }
+    userRef.update({
+        [`devices.${data.deviceId}`]: admin.firestore.FieldValue.delete(),
+    });
+    db.collection('devices').doc(data.deviceId).delete();
+});
+
+export const status = functions.runWith({ maxInstances: MAX_FUNCTION_INSTANCES }).https.onRequest(async (request, response) => {
     const data = request.body as statusData;
     if (!data) {
         functions.logger.log('Body must be valid JSON object!');
         response.status(400).send('Body must be valid JSON object!');
         return;
     }
-    if (typeof data.arduinoID != 'string' || data.arduinoID.length != 32) {
-        const error = 'A JSON property of type string and titled arduinoID must be present with length 32!';
+    if (typeof data.arduinoID != 'string' || data.arduinoID.length != 36) {
+        const error = 'A JSON property of type string and titled arduinoID must be present with length 36!';
         functions.logger.log(error);
         response.status(400).send(error);
         return;

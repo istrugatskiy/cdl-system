@@ -1,7 +1,7 @@
 import { html, css, LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { button, h1 } from './common-styles';
-import { addDevicePopup } from './constant-refs';
+import { addDevicePopup, iconList, manageDevice, manageDevicePopup } from './constant-refs';
 import './add-device';
 
 // Fixes customElementRegistry being written to twice.
@@ -53,14 +53,16 @@ export class DeviceItem extends LitElement {
     @property({ type: Boolean, reflect: true, attribute: 'data-display-item' })
     displayItem = false;
 
-    @property({ type: String, reflect: true, attribute: 'data-device-name' })
-    deviceName = '';
-
     @property({ type: Number, reflect: true, attribute: 'data-device-order' })
     deviceOrder = 0;
 
-    @property({ type: String, reflect: true, attribute: 'data-arduinoID' })
+    @property({ type: String, reflect: true, attribute: 'data-arduino-id' })
     arduinoID = '';
+
+    @property({ type: Number, reflect: true, attribute: 'data-devices-assigned' })
+    devicesAssigned = 0;
+
+    device?: device;
 
     private menuClose = () => {
         this.areButtonsDisabled = false;
@@ -69,8 +71,6 @@ export class DeviceItem extends LitElement {
     private menuOpen = () => {
         this.areButtonsDisabled = true;
     };
-
-    private iconList = ['potted_plant', 'sprinkler', 'grass', 'psychiatry', 'eco'];
 
     connectedCallback() {
         super.connectedCallback();
@@ -88,16 +88,20 @@ export class DeviceItem extends LitElement {
         addDevicePopup.open();
     }
 
-    viewDevice() {}
+    viewDevice() {
+        manageDevicePopup.open();
+        manageDevice.device = this.device;
+        manageDevice.arduinoUUID = this.arduinoID;
+    }
 
     render() {
-        return html`<button class="button add-button pop-in" ?disabled=${this.areButtonsDisabled} ?hidden=${this.displayItem} @click=${this.addDevice}>
+        return html`<button class="button add-button pop-in" ?disabled=${this.areButtonsDisabled || this.devicesAssigned > 4} ?hidden=${this.displayItem} @click=${this.addDevice}>
                 <div class="material-symbols-outlined icon">add</div>
-                Add Device
+                Add Device (${this.devicesAssigned}/5)
             </button>
-            <button ?hidden=${!this.displayItem} class="button add-button pop-in" ?disabled=${this.areButtonsDisabled}>
-                <div class="material-symbols-outlined icon">${this.iconList[this.deviceOrder]}</div>
-                ${this.deviceName}
+            <button ?hidden=${!this.displayItem} class="button add-button pop-in" ?disabled=${this.areButtonsDisabled} @click=${this.viewDevice}>
+                <div class="material-symbols-outlined icon">${iconList[this.deviceOrder]}</div>
+                ${this.device?.name}
             </button>`;
     }
 }

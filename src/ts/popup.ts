@@ -110,9 +110,9 @@ export class Popup extends LitElement {
 
     private isInStateTransition = false;
 
-    private menuOpen = new CustomEvent('menu-open', { bubbles: true, composed: true });
+    private _menuOpen = new CustomEvent('menu-open', { bubbles: true, composed: true });
 
-    private menuClose = new CustomEvent('menu-close', { bubbles: true, composed: true });
+    private _menuClose = new CustomEvent('menu-close', { bubbles: true, composed: true });
 
     connectedCallback() {
         super.connectedCallback();
@@ -121,7 +121,7 @@ export class Popup extends LitElement {
 
     async open() {
         if (this.isInStateTransition) return;
-        this.dispatchEvent(this.menuOpen);
+        this.dispatchEvent(this._menuOpen);
         this.isInStateTransition = true;
         this.areButtonsDisabled = true;
         this.style.display = 'flex';
@@ -132,7 +132,7 @@ export class Popup extends LitElement {
 
     close = async () => {
         if (this.isInStateTransition) return;
-        this.dispatchEvent(this.menuClose);
+        this.dispatchEvent(this._menuClose);
         this.areButtonsDisabled = true;
         this.isInStateTransition = true;
         this.closing = true;

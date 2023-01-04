@@ -1,7 +1,7 @@
 import { html, css, LitElement } from 'lit';
-import { customElement, query, state } from 'lit/decorators.js';
+import { customElement, property, query, state } from 'lit/decorators.js';
 import { delay, handleError } from './';
-import { button, h1, p } from './common-styles';
+import { button, h1, p, transitionablePopupChild } from './common-styles';
 import { addDevicePopup, passwordRegex, SSIDRegex } from './constant-refs';
 import { Popup } from './popup';
 import { getFunctions, httpsCallable } from 'firebase/functions';
@@ -13,73 +13,13 @@ if (module.hot) {
     });
 }
 
-type deviceConfig = {
-    name: string;
-    optimalMoisture: number;
-};
-
-type addDeviceResponse = {
-    deviceId: string;
-};
-
 @customElement('add-device')
 export class AddDevice extends LitElement {
     static styles = css`
         ${button}
         ${h1}
         ${p}
-        .flex {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        @keyframes slide-out {
-            0% {
-                transform: scale(1);
-            }
-            25% {
-                transform: translateX(0) scale(0.8);
-                opacity: 1;
-            }
-            50% {
-                transform: translateX(-50%) scale(0.7);
-                opacity: 0;
-            }
-            70% {
-                opacity: 0;
-                transform: translateX(50%);
-            }
-            100% {
-                transform: scale(1) translateX(0);
-                opacity: 1;
-            }
-        }
-        .transition-animation {
-            animation: slide-out 0.82s;
-            animation-timing-function: cubic-bezier(0.29, 0.09, 0.07, 1.2);
-        }
-        input {
-            cursor: text !important;
-            margin: 10px;
-        }
-        input::placeholder {
-            color: var(--light-green);
-            font-family: var(--non-large-font);
-        }
-        input:disabled {
-            background-color: white !important;
-        }
-        h1 {
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-        p {
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-        *[hidden] {
-            display: none !important;
-        }
+        ${transitionablePopupChild}
     `;
 
     @state()
@@ -103,6 +43,9 @@ export class AddDevice extends LitElement {
     @query('#moisture-level')
     private moistureLevelInput?: HTMLInputElement;
 
+    @property({ type: String, reflect: true, attribute: 'data-override' })
+    override = '';
+
     private arduinoUUID = '';
 
     private async step1(event: KeyboardEvent | MouseEvent, step = 2, beforeContinue?: () => Promise<void>) {
@@ -123,6 +66,7 @@ export class AddDevice extends LitElement {
         if ((event instanceof KeyboardEvent && event.key !== 'Enter') || !SSIDRegex.test(this.SSIDInput!.value) || !passwordRegex.test(this.passwordInput!.value)) return;
         try {
             await this.step1(event, 3, async () => {
+                if (this.arduinoUUID.length > 0) return;
                 const deviceConfig: deviceConfig = {
                     name: this.deviceNameInput!.value,
                     optimalMoisture: parseInt(this.moistureLevelInput!.value),
@@ -182,10 +126,16 @@ export class AddDevice extends LitElement {
         this.deviceNameInput!.value = '';
         this.moistureLevelInput!.value = '';
         (this.parentElement as Popup).photo = 'icon://wifi_password';
+        this.arduinoUUID = '';
     };
 
     private menuOpen = () => {
         this.areButtonsDisabled = false;
+        if (this.override.length === 0) return;
+        const override = this.override;
+        this.override = '';
+        this.arduinoUUID = override;
+        this.currentStep = 2;
     };
 
     connectedCallback() {

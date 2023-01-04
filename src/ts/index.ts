@@ -4,6 +4,7 @@ import { accountManagerPopup, addDevicePopup } from './constant-refs';
 import { getMessaging, getToken } from 'firebase/messaging';
 import { getFirestore, doc, updateDoc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import './popup';
+import './manage-device';
 
 // Initialize Firebase.
 initializeApp({
@@ -109,6 +110,8 @@ export const handleError = (e: Error) => {
         console.error('Failed to find engine_error_message element.');
         return;
     }
+    const error = new Error();
     document.getElementById('engine_error_message')!.textContent = `Error Message: ${e.toString()}`;
+    document.getElementById('engine_error_stack')!.textContent = error.stack?.toString().replaceAll('\n', '\r\n') ?? 'No stack trace available.';
 };
 window.addEventListener('error', (e) => handleError(e.error));
