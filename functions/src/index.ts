@@ -179,5 +179,5 @@ export const status = functions.runWith({ maxInstances: MAX_FUNCTION_INSTANCES }
         });
     }
     const optimalMoisture = ((await users.doc(device.uid).get()).data() as user)?.devices?.[data.arduinoID]?.optimalMoisture;
-    response.status(200).send(optimalMoisture);
+    response.status(200).send(`${optimalMoisture}`);
 });

@@ -63,7 +63,7 @@ void loop()
                 while (wifi.available())
                 {
                     String line = wifi.readStringUntil('\r');
-                    Serial.print(line);
+                    Serial.println(line);
                 }
             }
             lastTime += timeDelay;
