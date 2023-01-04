@@ -17,3 +17,8 @@ type device = {
     // Proportion from 0 to 1.
     optimalMoisture: number;
 };
+
+type user = {
+    notificationId?: string;
+    devices?: { [key: string]: device };
+};

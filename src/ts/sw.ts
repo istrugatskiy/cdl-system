@@ -12,6 +12,4 @@ const app = initializeApp({
 });
 const messaging = getMessaging(app);
 
-onBackgroundMessage(messaging, (payload) => {
-    console.log('Message received. ', payload);
-});
+onBackgroundMessage(messaging, () => {});

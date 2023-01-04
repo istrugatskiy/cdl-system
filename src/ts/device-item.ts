@@ -90,8 +90,8 @@ export class DeviceItem extends LitElement {
 
     viewDevice() {
         manageDevicePopup.open();
-        manageDevice.device = this.device;
         manageDevice.arduinoUUID = this.arduinoID;
+        manageDevice.startListen();
     }
 
     render() {

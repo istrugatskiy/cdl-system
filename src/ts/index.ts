@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, onAuthStateChanged, signInWithRedirect } from 'firebase/auth';
 import { accountManagerPopup, addDevicePopup } from './constant-refs';
 import { getMessaging, getToken } from 'firebase/messaging';
-import { getFirestore, doc, updateDoc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
+import { getFirestore, doc, updateDoc, getDoc, setDoc, onSnapshot, DocumentReference } from 'firebase/firestore';
 import './popup';
 import './manage-device';
 
@@ -22,6 +22,7 @@ const auth = getAuth();
 const main = document.querySelector('#main') as HTMLDivElement;
 const db = getFirestore();
 let unsub: () => void;
+export let userRef: DocumentReference | undefined;
 
 // Handles authState and related animations.
 onAuthStateChanged(auth, async (user) => {
@@ -30,6 +31,9 @@ onAuthStateChanged(auth, async (user) => {
         accountManagerPopup.close();
         addDevicePopup.close();
         return;
+    }
+    if (!userRef) {
+        userRef = doc(db, 'users', user.uid);
     }
     document.querySelector('main-auth')?.remove();
     const home = document.createElement('home-page');
@@ -45,7 +49,7 @@ onAuthStateChanged(auth, async (user) => {
     home.dataset.photo = user.photoURL!;
     home.dataset.uid = user.uid;
     setupMessaging();
-    unsub = onSnapshot(doc(db, 'users', user.uid), (doc) => {
+    unsub = onSnapshot(userRef, (doc) => {
         const data = doc.data();
         if (data == null) {
             return;
@@ -55,22 +59,22 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 const setupMessaging = async () => {
-    console.log('Setting up messaging');
+    // This is scuffed but it works.
     (await navigator.serviceWorker.getRegistrations()).forEach((reg) => {
-        console.log('Found service worker registration', reg);
         reg.unregister();
     });
+    if (!userRef) {
+        userRef = doc(db, 'users', auth.currentUser!.uid);
+    }
     const sw = await navigator.serviceWorker.register(new URL('sw.ts', import.meta.url), { type: 'module' });
     const messaging = getMessaging();
     getToken(messaging, { vapidKey: 'BCQInMtzJKJTH9lcDgDpGjKMSRKdar1nu0AUNHD7b7ShTDssKlG1HrsuQalnYHqXljdcsoNe_bBW2SVv9Wkh87k', serviceWorkerRegistration: sw }).then(async (token) => {
-        console.log('Got token', token);
-        const user = doc(db, 'users', auth.currentUser!.uid);
-        const current = (await getDoc(user)).data()!;
+        const current = (await getDoc(userRef!)).data()!;
         if (current?.notificationId) {
-            await updateDoc(user, { notificationId: token });
+            await updateDoc(userRef!, { notificationId: token });
             return;
         }
-        await setDoc(user, { notificationId: token });
+        await setDoc(userRef!, { notificationId: token });
     });
 };
 
