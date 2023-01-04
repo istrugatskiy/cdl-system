@@ -91,18 +91,6 @@ export class AddDevice extends LitElement {
     @state()
     isInTransition = false;
 
-    @query('#username')
-    private SSIDInput?: HTMLInputElement;
-
-    @query('#password')
-    private passwordInput?: HTMLInputElement;
-
-    @query('#device-name')
-    private deviceNameInput?: HTMLInputElement;
-
-    @query('#moisture-level')
-    private moistureLevelInput?: HTMLInputElement;
-
     private arduinoUUID = '';
 
     private async step1(event: KeyboardEvent | MouseEvent, step = 2, beforeContinue?: () => Promise<void>) {
@@ -117,59 +105,6 @@ export class AddDevice extends LitElement {
         this.isInTransition = false;
         this.areButtonsDisabled = false;
         (this.parentElement as Popup).enableXButton();
-    }
-
-    private async step2(event: KeyboardEvent | MouseEvent) {
-        if ((event instanceof KeyboardEvent && event.key !== 'Enter') || !SSIDRegex.test(this.SSIDInput!.value) || !passwordRegex.test(this.passwordInput!.value)) return;
-        try {
-            await this.step1(event, 3, async () => {
-                const deviceConfig: deviceConfig = {
-                    name: this.deviceNameInput!.value,
-                    optimalMoisture: parseInt(this.moistureLevelInput!.value),
-                };
-                deviceConfig.name ??= 'Unnamed Device';
-                deviceConfig.optimalMoisture ??= 50;
-                if (Number.isNaN(deviceConfig.optimalMoisture)) deviceConfig.optimalMoisture = 50;
-                deviceConfig.optimalMoisture /= 100;
-                const functions = getFunctions();
-                const addDevice = httpsCallable(functions, 'addDevice');
-                const result = await addDevice(deviceConfig);
-                const data = result.data as addDeviceResponse;
-                this.arduinoUUID = data.deviceId;
-            });
-        } catch (e) {
-            const error = e as Error;
-            console.error(error);
-            handleError(error);
-        }
-    }
-
-    private async step3(event: KeyboardEvent | MouseEvent) {
-        if (event instanceof KeyboardEvent && event.key !== 'Enter') return;
-        this.areButtonsDisabled = true;
-        const availability = await window.navigator.bluetooth.getAvailability();
-        if (!availability) {
-            this.currentStep = 0;
-            (this.parentElement as Popup).enableXButton();
-            (this.parentElement as Popup).photo = 'icon://bluetooth_disabled';
-        }
-        const encoder = new TextEncoder();
-        const device = await window.navigator.bluetooth.requestDevice({
-            filters: [{ services: ['bb6e107f-a364-45cc-90ad-b02df8261caf'] }],
-        });
-        const server = await device.gatt?.connect();
-        const service = await server?.getPrimaryService('bb6e107f-a364-45cc-90ad-b02df8261caf');
-        const ssid = await service?.getCharacteristic('bb6e107f-a364-45cc-90ad-b02df8261caf');
-        const password = await service?.getCharacteristic('c347d530-854b-42a9-a5be-7bcd8c5bd432');
-        const uuid = await service?.getCharacteristic('9ee24231-0201-4fa1-96b1-d05690f65a84');
-        await ssid?.writeValue(encoder.encode(this.SSIDInput!.value));
-        await password?.writeValue(encoder.encode(this.passwordInput!.value));
-        await uuid?.writeValue(encoder.encode(this.arduinoUUID));
-        server?.disconnect();
-        this.step1(event, 4, async () => {
-            await delay(410);
-            (this.parentElement as Popup).photo = 'icon://done';
-        });
     }
 
     private menuClose = async () => {

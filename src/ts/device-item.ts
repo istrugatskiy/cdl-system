@@ -88,6 +88,8 @@ export class DeviceItem extends LitElement {
         addDevicePopup.open();
     }
 
+    viewDevice() {}
+
     render() {
         return html`<button class="button add-button pop-in" ?disabled=${this.areButtonsDisabled} ?hidden=${this.displayItem} @click=${this.addDevice}>
                 <div class="material-symbols-outlined icon">add</div>

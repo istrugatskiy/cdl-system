@@ -130,7 +130,7 @@ export class Popup extends LitElement {
         this.areButtonsDisabled = false;
     }
 
-    async close() {
+    close = async () => {
         if (this.isInStateTransition) return;
         this.dispatchEvent(this.menuClose);
         this.areButtonsDisabled = true;
@@ -140,7 +140,7 @@ export class Popup extends LitElement {
         this.isInStateTransition = false;
         this.style.display = 'none';
         this.closing = false;
-    }
+    };
 
     disableXButton = () => {
         this.areButtonsDisabled = true;
