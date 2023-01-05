@@ -106,7 +106,7 @@ export class ManageDevice extends LitElement {
             let hh = stamp.getHours();
             let min = stamp.getMinutes();
             this.latestReadingTimestamp = `${yyyy}/${mm < 10 ? '0' + mm : mm}/${dd < 10 ? '0' + dd : dd}@${hh < 10 ? '0' + hh : hh}:${min < 10 ? '0' + min : min}`;
-            this.latestReading = this.dataList[this.arduinoUUID].moistureData[Number(latestReadingKey) ?? 0];
+            this.latestReading = this.dataList[this.arduinoUUID]?.moistureData[Number(latestReadingKey) ?? 0] ?? 0;
             this.device = this.dataList[this.arduinoUUID];
         };
         if (this.unsub) {

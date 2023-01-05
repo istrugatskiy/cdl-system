@@ -48,6 +48,20 @@ export class AddDevice extends LitElement {
 
     private arduinoUUID = '';
 
+    private previousInput: string = '';
+
+    private validate = (event: InputEvent) => {
+        const input = event.target as HTMLInputElement;
+        const toNumber = parseInt(input.value);
+        if (Number.isNaN(toNumber) && input.value !== '') {
+            input.value = this.previousInput;
+            return;
+        }
+        if (toNumber > 100) input.value = this.previousInput;
+        if (toNumber < 0) input.value = this.previousInput;
+        this.previousInput = input.value;
+    };
+
     private async step1(event: KeyboardEvent | MouseEvent, step = 2, beforeContinue?: () => Promise<void>) {
         if (event instanceof KeyboardEvent && event.key !== 'Enter') return;
         this.areButtonsDisabled = true;
@@ -179,7 +193,7 @@ export class AddDevice extends LitElement {
                     <h1>Device Name (required):</h1>
                     <input type="text" class="button" placeholder="Device Name" ?disabled=${this.areButtonsDisabled} id="device-name" maxlength="20" @input=${this.checkInput} autocomplete="off" />
                     <h1>Moisture Level (required):</h1>
-                    <input type="number" class="button" placeholder="50%" ?disabled=${this.areButtonsDisabled} id="moisture-level" min="0" max="100" @input=${this.checkInput} autocomplete="off" />
+                    <input type="number" class="button" placeholder="50%" ?disabled=${this.areButtonsDisabled} id="moisture-level" min="0" max="100" @input=${this.validate} autocomplete="off" />
                     <button class="button" ?disabled=${this.areButtonsDisabled || !this.deviceNameInput?.value} @click=${this.step1}>Continue</button>
                 </div>
                 <!-- Step 2 -->
