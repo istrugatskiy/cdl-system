@@ -58,6 +58,7 @@ export const addDevice = functions.runWith({ maxInstances: MAX_FUNCTION_INSTANCE
     const db = admin.firestore();
     // Get the user's profile from the users collection.
     let user = (await db.collection('users').doc(uid).get()).data() as user | undefined;
+    let shouldSetup = !user;
     if (!user) {
         user = {
             devices: {},
@@ -93,12 +94,16 @@ export const addDevice = functions.runWith({ maxInstances: MAX_FUNCTION_INSTANCE
         waterTimes: [],
         optimalMoisture: data.optimalMoisture,
     };
-    await db
-        .collection('users')
-        .doc(uid)
-        .update({
-            [`devices.${deviceId}`]: user.devices[deviceId],
-        });
+    if (!shouldSetup) {
+        await db
+            .collection('users')
+            .doc(uid)
+            .update({
+                [`devices.${deviceId}`]: user.devices[deviceId],
+            });
+    } else {
+        await db.collection('users').doc(uid).set(user);
+    }
     return { deviceId };
 });
 
