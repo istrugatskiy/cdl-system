@@ -70,6 +70,7 @@ const setupMessaging = async () => {
     const messaging = getMessaging();
     getToken(messaging, { vapidKey: 'BCQInMtzJKJTH9lcDgDpGjKMSRKdar1nu0AUNHD7b7ShTDssKlG1HrsuQalnYHqXljdcsoNe_bBW2SVv9Wkh87k', serviceWorkerRegistration: sw }).then(async (token) => {
         const current = (await getDoc(userRef!)).data()!;
+        console.log(current);
         if (current?.notificationId) {
             await updateDoc(userRef!, { notificationId: token });
             return;

@@ -6,8 +6,8 @@ service cloud.firestore {
         return request.auth != null && request.auth.uid == uuid;        
       }
       allow read: if canTouch();
-      allow create: if canTouch();
-      // && request.resource.data.notificationId is string
+      allow create: if canTouch()
+      && request.resource.data.notificationId is string;
       // && request.resource.data.hasOnly(['notificationId']);
       allow update: if canTouch()
       && request.resource.data.notificationId is string
