@@ -94,7 +94,7 @@ export class HomePage extends LitElement {
             </div>
             <div class="bottom-container">
                 ${Object.entries(this.deviceList ?? {}).map(([key, value], index) => html`<device-item data-device-order="${index}" .device=${value} data-arduino-id="${key}" ?data-display-item=${true}></device-item>`)}
-                <device-item data-devices-assigned="${Object.keys(this.deviceList).length}"></device-item>
+                <device-item data-devices-assigned="${Object.keys(this.deviceList ?? {}).length}"></device-item>
             </div>
         `;
     }
