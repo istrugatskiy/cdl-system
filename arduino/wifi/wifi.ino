@@ -25,6 +25,9 @@ void setup()
   String ssid = readStringFromEEPROM(0);
   String password = readStringFromEEPROM(33);
   // Scuffed.
+  digitalWrite(in_1, HIGH) ;
+  digitalWrite(in_2, LOW) ;
+  analogWrite(pwm, 255) ;
   int ssid_len = ssid.length() + 1;
   char _ssid[ssid_len];
   ssid.toCharArray(_ssid, ssid_len);
