@@ -11,6 +11,7 @@ constexpr int pwm = 2 ;  //initializing pin 2 as pwm
 constexpr int in_1 = 8 ;
 constexpr int in_2 = 9 ;
 constexpr bool connectAllow = false;
+int optimal = 50;
 String uuid = "";
 bool isOn = false;
 
@@ -18,16 +19,13 @@ void setup()
 {
   Serial.begin(9600);
   Serial.println("Connecting to WiFi…");
-  pinMode(pwm, OUTPUT) ;   //we have to set PWM pin as output
-  pinMode(in_1, OUTPUT) ; //Logic pins are also set as output
-  pinMode(in_2, OUTPUT) ;
+  
   int status = WL_IDLE_STATUS;
   String ssid = readStringFromEEPROM(0);
   String password = readStringFromEEPROM(33);
   // Scuffed.
-  digitalWrite(in_1, HIGH) ;
-  digitalWrite(in_2, LOW) ;
-  analogWrite(pwm, 255) ;
+  pinMode(9, OUTPUT);
+  digitalWrite(9, LOW);
   int ssid_len = ssid.length() + 1;
   char _ssid[ssid_len];
   ssid.toCharArray(_ssid, ssid_len);
@@ -47,7 +45,7 @@ void setup()
 }
 
 int getMoisture() {
-  return map(analogRead(A0), 600, 10, 0, 100);
+    return map(analogRead(A0), 600, 330, 0, 100);
 }
 
 void loop()
@@ -55,14 +53,11 @@ void loop()
   Serial.println(getMoisture());
   if ((millis() - lastTime) > timeDelay)
   {
-    if (isOn) {
-      digitalWrite(in_1,LOW) ;
-      digitalWrite(in_2,LOW) ;
-      analogWrite(pwm,0) ;
+    if (getMoisture() > optimal) {
+      digitalWrite(9, LOW);
     } else {
-      digitalWrite(in_1, HIGH) ;
-      digitalWrite(in_2, LOW) ;
-      analogWrite(pwm, 255) ;
+      digitalWrite(9, HIGH);
+      
     }
     if (WiFi.status() == WL_CONNECTED && connectAllow)
     {
