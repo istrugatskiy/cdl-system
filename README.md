@@ -7,3 +7,4 @@ Although the web interface functions well, the project is limited
 by the fact that the Arduino model provided by our high school could not concurrently run Bluetooth and Wifi.
 The codebase was limited to 48kb, which was not enough to load both the Bluetooth and Wifi libraries.
 This project was my first real experience working with limited technical resources on embedded devices.
+Some comments in the Arduino code are designed for students from other teams who borrowed the software platform.
