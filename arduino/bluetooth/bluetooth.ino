@@ -1,9 +1,6 @@
 #include <ArduinoBLE.h>
 #include <EEPROM.h>
 
-// Naming conventions stupid.
-// I camelcase where want.
-// code is garbage.
 char id[] = "bb6e107f-a364-45cc-90ad-b02df8261caf";
 BLEService InternetService(id);
 BLEStringCharacteristic WiFiUsername(id, BLEWrite, 32);
@@ -49,6 +46,8 @@ void resetEEPROM()
 
 void initBLE()
 {
+  // This should configured with the device's name.
+  // I wanted to read this from storage but I only have 512 bytes :(
   BLE.setLocalName("system-plant-waterer-ilya");
   BLE.setDeviceName("system-plant-waterer-ilya");
   InternetService.addCharacteristic(WiFiUsername);
@@ -68,7 +67,8 @@ void initBLE()
 void loop()
 {
   BLEDevice central = BLE.central();
-
+  // This saves the WiFi username and password to EEPROM.
+  // This storage is plain text, however due to technical limitations nothing better can be done.
   if (central)
   {
     while (central.connected())
